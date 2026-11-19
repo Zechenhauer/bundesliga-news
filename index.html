@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="NEWS" />
   <meta name="theme-color" content="#070d1a" />
-  <title>NEWS Ticker | Fußball, Darts &amp; Regio</title>
+  <title>NEWS Ticker | Fußball, Darts, Regio &amp; Verkehr</title>
   <link id="app-favicon" rel="icon" type="image/png" />
   <link id="apple-touch-icon" rel="apple-touch-icon" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -71,11 +71,11 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-lg sm:text-xl font-extrabold tracking-wide uppercase">
-              Sport &amp; Regio <span class="gold-text">NEWS-Ticker</span>
+              Sport, Regio &amp; Verkehr <span class="gold-text">NEWS-Ticker</span>
             </h1>
           </div>
           <p class="text-xs text-slate-400">
-            Fußball (1.–3. Liga &amp; Pokal/CL) • Darts &amp; Welt-Sport • Niederrhein &amp; Ruhrgebiet
+            Fußball (1.–3. Liga &amp; CL) • Darts &amp; Welt-Sport • Niederrhein &amp; Ruhrgebiet • Autobahn
           </p>
         </div>
       </div>
@@ -109,7 +109,7 @@
       </div>
     </div>
 
-    <!-- Haupt-Tabs: Fußball | Sport / Darts | Regio & Ruhrgebiet -->
+    <!-- Haupt-Tabs: Fußball | Sport / Darts | Regio & Ruhrgebiet | Verkehr & Baustellen -->
     <div class="max-w-5xl mx-auto px-4 pb-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/70 mb-2.5">
       <div class="flex flex-wrap items-center gap-2" id="main-tabs">
         <button type="button" data-tab="football"
@@ -123,6 +123,10 @@
         <button type="button" data-tab="regio"
           class="main-tab-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
           🏙️ Regio &amp; Ruhrgebiet
+        </button>
+        <button type="button" data-tab="traffic"
+          class="main-tab-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+          🚧 Verkehr &amp; Baustellen
         </button>
       </div>
 
@@ -203,7 +207,7 @@
       </div>
     </div>
 
-    <!-- Unterfilter Tab 3: Regio & Ruhrgebiet (inkl. Essen & Fokus-Priorität) -->
+    <!-- Unterfilter Tab 3: Regio & Ruhrgebiet -->
     <div id="regio-subfilters" class="max-w-5xl mx-auto px-4 pb-3 hidden flex-col gap-2">
       <div class="flex flex-col sm:flex-row gap-2.5 justify-between">
         <div class="flex flex-wrap items-center gap-1.5" id="regio-city-filters">
@@ -234,6 +238,45 @@
           <input type="text" id="regio-search-input" placeholder="Suche (Moers, Duisburg, Essen, A40)..."
             class="w-full bg-slate-900/90 border border-slate-700 focus:border-[#d4af37] focus:outline-none rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-400" />
         </div>
+      </div>
+    </div>
+
+    <!-- Unterfilter Tab 4: Verkehr & Baustellen -->
+    <div id="traffic-subfilters" class="max-w-5xl mx-auto px-4 pb-3 hidden flex-col gap-2">
+      <div class="flex flex-col sm:flex-row gap-2.5 justify-between">
+        <div class="flex flex-wrap items-center gap-1.5" id="traffic-type-filters">
+          <button data-traffic-type="ALL" class="traffic-type-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+            Alle Lagen
+          </button>
+          <button data-traffic-type="CLOSURE" class="traffic-type-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            🚫 Sperrungen
+          </button>
+          <button data-traffic-type="ROADWORK" class="traffic-type-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            🏗️ Baustellen
+          </button>
+          <a href="https://www.adac.de/verkehr/verkehrsinformationen/de/nordrhein-westfalen/"
+             target="_blank" rel="noopener noreferrer"
+             class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#ffdc00]/15 text-[#ffdc00] border border-[#ffdc00]/45 hover:bg-[#ffdc00]/25 transition inline-flex items-center gap-1">
+            🚗 ADAC Verkehr NRW ↗
+          </a>
+        </div>
+
+        <div class="relative sm:w-64">
+          <input type="text" id="traffic-search-input" placeholder="Suche (A40, A42, Kreuz, Ausfahrt)..."
+            class="w-full bg-slate-900/90 border border-slate-700 focus:border-[#d4af37] focus:outline-none rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-400" />
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-1.5" id="traffic-road-filters">
+        <span class="text-[11px] text-slate-400 mr-1 font-medium">Autobahn:</span>
+        <button data-road="ALL" class="road-btn gold-bg px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer">Alle</button>
+        <button data-road="A40" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A40</button>
+        <button data-road="A42" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A42</button>
+        <button data-road="A57" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A57</button>
+        <button data-road="A3" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A3</button>
+        <button data-road="A59" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A59</button>
+        <button data-road="A52" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A52</button>
+        <button data-road="A2" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A2</button>
       </div>
     </div>
   </header>
@@ -268,7 +311,7 @@
         <span class="text-slate-600">|</span>
         <span class="gold-text font-mono text-[11px]">J. SCHÜTZENDORF WEB &amp; CODE</span>
       </div>
-      <span class="text-[11px] text-slate-500">Fußball, Darts, Niederrhein &amp; Ruhrgebiet</span>
+      <span class="text-[11px] text-slate-500">Fußball • Darts • Niederrhein &amp; Ruhrgebiet • Verkehr</span>
     </div>
   </footer>
 
@@ -295,7 +338,7 @@
         <div id="modal-description" class="text-sm text-slate-200/95 leading-relaxed whitespace-pre-line bg-[#070d1a]/60 border border-slate-800 rounded-xl p-4"></div>
 
         <div class="text-[11px] text-slate-400 break-all bg-slate-900/70 border border-slate-800/80 rounded-lg px-3 py-2">
-          <span class="text-slate-500 font-semibold">Quelle-URL: </span>
+          <span class="text-slate-500 font-semibold">Quelle / Karte: </span>
           <span id="modal-url-preview"></span>
         </div>
       </div>
@@ -322,10 +365,15 @@
 
   <script>
     const WORKER_URL = 'https://bundesliga-news.jelenbreaker.workers.dev/';
-    const STORAGE_KEY = 'bl_worker_news_cache_v10';
-
-    // Textlänge auf "lang" (0 = ungekürzter Beschreibungstext aus den Feeds)
+    const STORAGE_KEY = 'bl_worker_news_cache_v14';
     const MAX_DESC_CHARS = 0;
+
+    // Alte Cache-Versionen restlos entfernen
+    try {
+      for (let i = 1; i <= 13; i++) {
+        localStorage.removeItem(`bl_worker_news_cache_v${i}`);
+      }
+    } catch (_) {}
 
     const TEAM_KEYWORDS = {
       BAYERN: ['bayern münchen', 'fc bayern', 'fcb', 'münchen'],
@@ -334,8 +382,6 @@
       RWE: ['rot-weiss essen', 'rot-weiß essen', 'rot weiss essen', 'rot weiß essen', 'rwe', 'essen']
     };
 
-    // Fokus-Regionen mit absteigender Priorität:
-    // Moers (7) > Duisburg (6) > Niederrhein/Kreis Wesel (5) > Essen (4) > Oberhausen (3) > Gelsenkirchen (2) > Bottrop (1)
     const REGIO_PRIORITY_RULES = [
       { key: 'MOERS', label: 'Moers', score: 7, keywords: ['moers', 'kapellen', 'repelen', 'rheinkamp', 'utfort', 'schwafel', 'meerbeck', 'asberg', 'hochstraß', 'scherpenberg'] },
       { key: 'DUISBURG', label: 'Duisburg', score: 6, keywords: ['duisburg', 'homberg', 'rheinhausen', 'hamborn', 'marxloh', 'ruhrort', 'meiderich', 'walsum', 'buchholz', 'hochfeld'] },
@@ -418,6 +464,8 @@
     let currentLeagueFilter = 'ALL';
     let currentWorldFilter = 'ALL';
     let currentRegioFilter = 'ALL';
+    let currentTrafficType = 'ALL';
+    let currentRoadFilter = 'ALL';
     let currentTeamFilter = 'ALL';
     let onlyToday = true;
     let searchQuery = '';
@@ -468,8 +516,8 @@
           ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/35'
           : 'bg-rose-500/15 text-rose-300 border-rose-500/35';
         const infoText = src.ok
-          ? `${src.source} (${src.league}): ${src.count}`
-          : `${src.source} (${src.league}): ${src.error || 'Fehler'}`;
+          ? `${src.source}: ${src.count}`
+          : `${src.source}: ${src.error || 'Fehler'}`;
 
         return `
           <span class="text-[11px] font-medium px-2.5 py-1 rounded-md border ${badgeStyle}">
@@ -484,7 +532,7 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
           savedAt: Date.now(),
           sources: payload.sources || [],
-          items: (payload.items || []).slice(0, 320)
+          items: payload.items || []
         }));
       } catch (_) {}
     }
@@ -552,6 +600,9 @@
       if (league === 'WORLD_SPORT') return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40';
       if (league === 'REGIO_NR') return 'bg-teal-500/20 text-teal-300 border-teal-500/40';
       if (league === 'REGIO_RG') return 'bg-orange-500/20 text-orange-300 border-orange-500/40';
+      if (league === 'CLOSURE') return 'bg-rose-500/25 text-rose-200 border-rose-500/50';
+      if (league === 'ROADWORK') return 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+      if (league === 'WARNING') return 'bg-orange-500/20 text-orange-300 border-orange-500/40';
       return 'bg-slate-700 text-slate-200 border-slate-600';
     }
 
@@ -560,6 +611,54 @@
       const keywords = TEAM_KEYWORDS[currentTeamFilter] || [];
       const haystack = `${item.title || ''} ${item.description || ''}`.toLowerCase();
       return keywords.some(kw => haystack.includes(kw));
+    }
+
+    function matchesRoadFilter(item) {
+      if (currentRoadFilter === 'ALL') return true;
+      if (item.road && String(item.road).toUpperCase() === currentRoadFilter) return true;
+      const title = (item.title || '').toUpperCase();
+      const label = (item.leagueLabel || '').toUpperCase();
+      return title.includes(`[${currentRoadFilter}]`) || label.startsWith(`${currentRoadFilter} `);
+    }
+
+    function updateTrafficTypeCounters() {
+      const roadItems = allNews.filter(i => (i.tab || '') === 'traffic' && matchesRoadFilter(i));
+      const cAll = roadItems.length;
+      const cClosure = roadItems.filter(i => i.league === 'CLOSURE').length;
+      const cRoadwork = roadItems.filter(i => i.league === 'ROADWORK').length;
+
+      const btnAll = document.querySelector('[data-traffic-type="ALL"]');
+      const btnClosure = document.querySelector('[data-traffic-type="CLOSURE"]');
+      const btnRoadwork = document.querySelector('[data-traffic-type="ROADWORK"]');
+
+      if (btnAll) btnAll.textContent = `Alle Lagen (${cAll})`;
+      if (btnClosure) btnClosure.textContent = `🚫 Sperrungen (${cClosure})`;
+      if (btnRoadwork) btnRoadwork.textContent = `🏗️ Baustellen (${cRoadwork})`;
+    }
+
+    function resetTrafficFilterButtons() {
+      currentTrafficType = 'ALL';
+      currentRoadFilter = 'ALL';
+
+      document.querySelectorAll('.traffic-type-btn').forEach(b => {
+        b.classList.remove('gold-bg', 'font-bold');
+        b.classList.add('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+      });
+      const defaultTypeBtn = document.querySelector('[data-traffic-type="ALL"]');
+      if (defaultTypeBtn) {
+        defaultTypeBtn.classList.remove('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        defaultTypeBtn.classList.add('gold-bg', 'font-bold');
+      }
+
+      document.querySelectorAll('.road-btn').forEach(b => {
+        b.classList.remove('gold-bg', 'font-bold');
+        b.classList.add('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+      });
+      const defaultRoadBtn = document.querySelector('[data-road="ALL"]');
+      if (defaultRoadBtn) {
+        defaultRoadBtn.classList.remove('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        defaultRoadBtn.classList.add('gold-bg', 'font-bold');
+      }
     }
 
     function openArticleModal(index) {
@@ -582,10 +681,12 @@
       sourceBadge.textContent = item.source || 'Quelle';
       timeEl.textContent = formatTime(item.timestamp);
       titleEl.textContent = item.title || 'Ohne Titel';
-      descEl.textContent = formatDescription(item.description || '') || 'Keine ausführliche Zusammenfassung im Feed vorhanden. Klicke unten auf „Vollständigen Artikel öffnen“, um den Beitrag direkt bei der Quelle zu lesen.';
+      descEl.textContent = formatDescription(item.description || '') || 'Keine weiteren Details vorhanden.';
       urlPreviewEl.textContent = activeModalLink;
       extLinkEl.href = activeModalLink || '#';
-      extLinkEl.textContent = `Vollständigen Artikel (${item.source || 'Quelle'}) öffnen →`;
+      extLinkEl.textContent = item.tab === 'traffic'
+        ? 'Position auf Karte öffnen →'
+        : `Vollständigen Artikel (${item.source || 'Quelle'}) öffnen →`;
       copyBtn.textContent = '🔗 Link kopieren';
 
       modal.classList.remove('hidden');
@@ -630,9 +731,22 @@
       const container = document.getElementById('news-container');
       const countEl = document.getElementById('news-count');
 
+      if (currentMainTab === 'traffic') {
+        updateTrafficTypeCounters();
+      }
+
       let filtered = allNews.filter(item => {
         const itemTab = item.tab || 'football';
         if (itemTab !== currentMainTab) return false;
+
+        if (currentMainTab === 'traffic') {
+          const matchesType = currentTrafficType === 'ALL' || item.league === currentTrafficType;
+          const matchesRoad = matchesRoadFilter(item);
+          const matchesTrafficSearch = !searchQuery ||
+            (item.title || '').toLowerCase().includes(searchQuery) ||
+            (item.description || '').toLowerCase().includes(searchQuery);
+          return matchesType && matchesRoad && matchesTrafficSearch;
+        }
 
         const matchesDay = !onlyToday || isSameDay(item.timestamp);
 
@@ -653,7 +767,7 @@
           return matchesDay && matchesWorldCat && matchesWorldSearch;
         }
 
-        // Tab 3: Regio & Ruhrgebiet (strenger Fokus-Filter ohne Bonn/Köln/Düsseldorf)
+        // Tab 3: Regio & Ruhrgebiet
         const regioInfo = getRegioMatchInfo(item);
         let matchesRegioCat = true;
         if (currentRegioFilter === 'FOCUS') {
@@ -674,28 +788,36 @@
         return matchesDay && matchesRegioCat && matchesRegioSearch;
       });
 
-      // Im Regio-Tab nach Fokus-Priorität (Moers > Duisburg > Niederrhein > Essen > Oberhausen > Gelsenkirchen > Bottrop) und dann nach Aktualität sortieren
       if (currentMainTab === 'regio') {
         filtered = filtered
           .map(item => ({ ...item, _regio: getRegioMatchInfo(item) }))
           .sort((a, b) => {
-            if (b._regio.topScore !== a._regio.topScore) {
-              return b._regio.topScore - a._regio.topScore;
-            }
+            const aPrio = a._regio.isFocus ? 1 : 0;
+            const bPrio = b._regio.isFocus ? 1 : 0;
+            if (bPrio !== aPrio) return bPrio - aPrio;
             return (b.timestamp || 0) - (a.timestamp || 0);
           });
+      } else if (currentMainTab === 'traffic') {
+        const rank = { CLOSURE: 3, WARNING: 2, ROADWORK: 1 };
+        filtered.sort((a, b) => {
+          const rDiff = (rank[b.league] || 0) - (rank[a.league] || 0);
+          if (rDiff !== 0) return rDiff;
+          return (b.timestamp || 0) - (a.timestamp || 0);
+        });
       }
 
       visibleNews = filtered;
 
-      const dayLabel = onlyToday ? ' (heute)' : ' (alle Tage)';
+      const dayLabel = currentMainTab === 'traffic'
+        ? ' (aktive Lagen)'
+        : (onlyToday ? ' (heute)' : ' (alle Tage)');
       countEl.textContent = `${visibleNews.length} aktuelle Meldungen${dayLabel}`;
 
       if (visibleNews.length === 0) {
         container.innerHTML = `
           <div class="col-span-full text-center py-12 px-4 text-slate-400 border border-dashed border-slate-700 rounded-xl">
             <p class="font-semibold text-slate-200 mb-1">Keine Meldungen angezeigt</p>
-            <p class="text-xs text-slate-400">${errorMessage || (onlyToday ? 'Für den heutigen Tag liegen aktuell keine passenden Meldungen vor. Teste ggf. „Nur heute: AUS“.' : 'Kein Treffer für den gewählten Filter.')}</p>
+            <p class="text-xs text-slate-400">${errorMessage || (currentMainTab === 'traffic' ? 'Für die gewählte Autobahn / Kategorie liegen aktuell keine Meldungen im Bereich Niederrhein & Ruhrgebiet vor.' : (onlyToday ? 'Für den heutigen Tag liegen aktuell keine passenden Meldungen vor. Teste ggf. „Nur heute: AUS“.' : 'Kein Treffer für den gewählten Filter.'))}</p>
           </div>`;
         return;
       }
@@ -707,7 +829,7 @@
         const focusCitiesBadge = regioMeta && regioMeta.badges.length > 0
           ? `<span class="text-[11px] font-bold px-2 py-0.5 rounded bg-[#d4af37]/20 text-[#d4af37] border border-[#d4af37]/40">⭐ ${regioMeta.badges.join(' • ')}</span>`
           : '';
-        const cardHighlight = regioMeta && regioMeta.isFocus
+        const cardHighlight = (regioMeta && regioMeta.isFocus) || item.league === 'CLOSURE'
           ? 'border-[#d4af37]/45'
           : 'border-slate-800';
 
@@ -741,8 +863,8 @@
             </div>
 
             <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-              <span>Artikel im Pop-up lesen</span>
-              <span class="gold-text font-semibold">Artikel lesen ↗</span>
+              <span>${item.tab === 'traffic' ? 'Details & Karte im Pop-up' : 'Artikel im Pop-up lesen'}</span>
+              <span class="gold-text font-semibold">${item.tab === 'traffic' ? 'Details ↗' : 'Artikel lesen ↗'}</span>
             </div>
           </article>
         `;
@@ -763,12 +885,14 @@
         document.getElementById('search-input').value = '';
         document.getElementById('world-search-input').value = '';
         document.getElementById('regio-search-input').value = '';
+        document.getElementById('traffic-search-input').value = '';
 
         const fbSub = document.getElementById('football-subfilters');
         const worldSub = document.getElementById('world-subfilters');
         const regioSub = document.getElementById('regio-subfilters');
+        const trafficSub = document.getElementById('traffic-subfilters');
 
-        [fbSub, worldSub, regioSub].forEach(el => {
+        [fbSub, worldSub, regioSub, trafficSub].forEach(el => {
           el.classList.add('hidden');
           el.classList.remove('flex');
         });
@@ -779,9 +903,13 @@
         } else if (currentMainTab === 'world') {
           worldSub.classList.remove('hidden');
           worldSub.classList.add('flex');
-        } else {
+        } else if (currentMainTab === 'regio') {
           regioSub.classList.remove('hidden');
           regioSub.classList.add('flex');
+        } else {
+          trafficSub.classList.remove('hidden');
+          trafficSub.classList.add('flex');
+          resetTrafficFilterButtons();
         }
 
         renderSourcesStatus(lastSourcesData);
@@ -831,6 +959,34 @@
       });
     });
 
+    document.querySelectorAll('.traffic-type-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.traffic-type-btn').forEach(b => {
+          b.classList.remove('gold-bg', 'font-bold');
+          b.classList.add('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        });
+        btn.classList.remove('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        btn.classList.add('gold-bg', 'font-bold');
+
+        currentTrafficType = btn.dataset.trafficType;
+        renderNews();
+      });
+    });
+
+    document.querySelectorAll('.road-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.road-btn').forEach(b => {
+          b.classList.remove('gold-bg', 'font-bold');
+          b.classList.add('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        });
+        btn.classList.remove('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        btn.classList.add('gold-bg', 'font-bold');
+
+        currentRoadFilter = btn.dataset.road;
+        renderNews();
+      });
+    });
+
     const todayBtn = document.getElementById('today-toggle-btn');
     todayBtn.addEventListener('click', () => {
       onlyToday = !onlyToday;
@@ -860,7 +1016,7 @@
       });
     });
 
-    ['search-input', 'world-search-input', 'regio-search-input'].forEach(id => {
+    ['search-input', 'world-search-input', 'regio-search-input', 'traffic-search-input'].forEach(id => {
       document.getElementById(id).addEventListener('input', (e) => {
         searchQuery = e.target.value.trim().toLowerCase();
         renderNews();
@@ -868,15 +1024,6 @@
     });
 
     generateNewsAppIcons();
-
-    const initialCache = loadCache();
-    if (initialCache && Array.isArray(initialCache.items) && initialCache.items.length > 0) {
-      allNews = initialCache.items;
-      lastSourcesData = initialCache.sources || [];
-      renderSourcesStatus(lastSourcesData);
-      renderNews();
-    }
-
     loadFromWorker();
     setInterval(loadFromWorker, 180000);
   </script>
