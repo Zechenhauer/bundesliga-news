@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="NEWS" />
   <meta name="theme-color" content="#070d1a" />
-  <title>Fußball NEWS | 1., 2., 3. Liga &amp; Pokal/Int.</title>
+  <title>Fußball &amp; Sport NEWS | Liga, Pokal &amp; Darts</title>
   <link id="app-favicon" rel="icon" type="image/png" />
   <link id="apple-touch-icon" rel="apple-touch-icon" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -66,17 +66,17 @@
         <div class="w-11 h-11 rounded-xl border gold-border bg-gradient-to-br from-[#0f172a] to-[#050b14] flex flex-col items-center justify-center shadow-lg shrink-0 relative overflow-hidden">
           <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           <span class="text-[11px] font-black tracking-wider gold-text leading-none">NEWS</span>
-          <span class="text-[8px] font-bold tracking-widest text-slate-300 mt-0.5">1•2•3•INT</span>
+          <span class="text-[8px] font-bold tracking-widest text-slate-300 mt-0.5">SPORT</span>
         </div>
 
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-lg sm:text-xl font-extrabold tracking-wide uppercase">
-              Fußball <span class="gold-text">NEWS-Ticker</span>
+              Sport &amp; Fußball <span class="gold-text">NEWS-Ticker</span>
             </h1>
           </div>
           <p class="text-xs text-slate-400">
-            1., 2. &amp; 3. Liga • Pokal, Länderspiele &amp; Internationales
+            1., 2., 3. Liga &amp; Pokal • Darts &amp; Sport aus aller Welt
           </p>
         </div>
       </div>
@@ -111,54 +111,94 @@
       </div>
     </div>
 
-    <!-- Liga-/Bereichs-Filter, Tagesfilter & Suchleiste -->
-    <div class="max-w-5xl mx-auto px-4 pb-2.5 flex flex-col sm:flex-row gap-2.5 justify-between">
-      <div class="flex flex-wrap items-center gap-1.5" id="league-filters">
-        <button data-filter="ALL" class="filter-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
-          Alle News
+    <!-- Haupt-Tabs: Fußball vs. Sport aus aller Welt (inkl. Darts) -->
+    <div class="max-w-5xl mx-auto px-4 pb-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/70 mb-2.5">
+      <div class="flex items-center gap-2" id="main-tabs">
+        <button type="button" data-tab="football"
+          class="main-tab-btn gold-bg px-3.5 py-1.5 rounded-lg text-xs font-extrabold cursor-pointer">
+          ⚽ Fußball (1.–3. Liga &amp; Pokal)
         </button>
-        <button data-filter="BL1" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
-          1. Bundesliga
+        <button type="button" data-tab="world"
+          class="main-tab-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+          🎯 Sport / Darts (Welt)
         </button>
-        <button data-filter="BL2" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
-          2. Bundesliga
+      </div>
+
+      <button type="button" id="today-toggle-btn"
+        class="gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer border gold-border">
+        📅 Nur heute: AN
+      </button>
+    </div>
+
+    <!-- Unterfilter Fußball -->
+    <div id="football-subfilters" class="max-w-5xl mx-auto px-4 pb-2.5 flex flex-col gap-2">
+      <div class="flex flex-col sm:flex-row gap-2.5 justify-between">
+        <div class="flex flex-wrap items-center gap-1.5" id="league-filters">
+          <button data-filter="ALL" class="filter-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+            Alle Ligen
+          </button>
+          <button data-filter="BL1" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            1. Bundesliga
+          </button>
+          <button data-filter="BL2" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            2. Bundesliga
+          </button>
+          <button data-filter="BL3" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            3. Liga
+          </button>
+          <button data-filter="INT" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            Pokal &amp; DFB
+          </button>
+        </div>
+
+        <div class="relative sm:w-64">
+          <input type="text" id="search-input" placeholder="Suche (Verein, Spieler, Darts, Thema)..."
+            class="w-full bg-slate-900/90 border border-slate-700 focus:border-[#d4af37] focus:outline-none rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-400" />
+        </div>
+      </div>
+
+      <!-- Team-Schnellfilter -->
+      <div class="flex flex-wrap items-center gap-1.5" id="team-filters">
+        <span class="text-[11px] text-slate-400 mr-1 font-medium">Teams:</span>
+        <button data-team="ALL" class="team-btn gold-bg px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer">
+          Alle Teams
         </button>
-        <button data-filter="BL3" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
-          3. Liga
+        <button data-team="BAYERN" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
+          Bayern München
         </button>
-        <button data-filter="INT" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
-          Pokal &amp; Int.
+        <button data-team="GLADBACH" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
+          Borussia Mönchengladbach
         </button>
-        <button type="button" id="today-toggle-btn"
-          class="gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer border gold-border">
-          📅 Nur heute: AN
+        <button data-team="MSV" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
+          MSV Duisburg
+        </button>
+        <button data-team="RWE" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
+          Rot-Weiß Essen
+        </button>
+      </div>
+    </div>
+
+    <!-- Unterfilter Sport / Darts (Welt) -->
+    <div id="world-subfilters" class="max-w-5xl mx-auto px-4 pb-3 hidden flex-col sm:flex-row gap-2.5 justify-between">
+      <div class="flex flex-wrap items-center gap-1.5" id="world-category-filters">
+        <button data-world="ALL" class="world-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+          Alle Welt-News
+        </button>
+        <button data-world="DARTS" class="world-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          🎯 Darts
+        </button>
+        <button data-world="WORLD_FB" class="world-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          🌍 Int. Fußball
+        </button>
+        <button data-world="WORLD_SPORT" class="world-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          🏆 Welt-Sport
         </button>
       </div>
 
       <div class="relative sm:w-64">
-        <input type="text" id="search-input" placeholder="Freie Suche (Verein, DFB, CL, Thema)..."
+        <input type="text" id="world-search-input" placeholder="Suche (Darts, PDC, Premier League, Sport)..."
           class="w-full bg-slate-900/90 border border-slate-700 focus:border-[#d4af37] focus:outline-none rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-400" />
       </div>
-    </div>
-
-    <!-- Team-Schnellfilter -->
-    <div class="max-w-5xl mx-auto px-4 pb-3 flex flex-wrap items-center gap-1.5" id="team-filters">
-      <span class="text-[11px] text-slate-400 mr-1 font-medium">Teams:</span>
-      <button data-team="ALL" class="team-btn gold-bg px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer">
-        Alle Teams
-      </button>
-      <button data-team="BAYERN" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
-        Bayern München
-      </button>
-      <button data-team="GLADBACH" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
-        Borussia Mönchengladbach
-      </button>
-      <button data-team="MSV" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
-        MSV Duisburg
-      </button>
-      <button data-team="RWE" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
-        Rot-Weiß Essen
-      </button>
     </div>
   </header>
 
@@ -192,7 +232,7 @@
         <span class="text-slate-600">|</span>
         <span class="gold-text font-mono text-[11px]">J. SCHÜTZENDORF WEB &amp; CODE</span>
       </div>
-      <span class="text-[11px] text-slate-500">1., 2., 3. Liga &amp; Pokal/Int. Live-Feed</span>
+      <span class="text-[11px] text-slate-500">Fußball, Pokal, Darts &amp; Welt-Sport</span>
     </div>
   </footer>
 
@@ -200,7 +240,6 @@
   <div id="article-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
     onclick="handleModalBackdropClick(event)">
     <div class="modal-animate w-full max-w-2xl rounded-2xl border gold-border bg-[#0f172a] shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
-      <!-- Modal Header -->
       <div class="px-5 py-4 border-b border-slate-800 bg-[#070d1a]/90 flex items-center justify-between gap-3">
         <div class="flex items-center gap-2 flex-wrap">
           <span id="modal-league-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded border"></span>
@@ -214,7 +253,6 @@
         </button>
       </div>
 
-      <!-- Modal Inhalt -->
       <div class="p-5 sm:p-6 overflow-y-auto space-y-4">
         <h2 id="modal-title" class="text-lg sm:text-xl font-extrabold text-white leading-snug"></h2>
 
@@ -226,7 +264,6 @@
         </div>
       </div>
 
-      <!-- Modal Footer mit Aktionen -->
       <div class="px-5 py-3.5 border-t border-slate-800 bg-[#070d1a]/90 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
         <div class="flex items-center gap-2">
           <button type="button" onclick="closeArticleModal()"
@@ -249,7 +286,7 @@
 
   <script>
     const WORKER_URL = 'https://bundesliga-news.jelenbreaker.workers.dev/';
-    const STORAGE_KEY = 'bl_worker_news_cache_v6';
+    const STORAGE_KEY = 'bl_worker_news_cache_v7';
 
     // Textlänge auf "lang" (0 = ungekürzter Beschreibungstext aus den Feeds)
     const MAX_DESC_CHARS = 0;
@@ -296,7 +333,7 @@
 
         ctx.fillStyle = '#f1f5f9';
         ctx.font = '700 36px system-ui, -apple-system, sans-serif';
-        ctx.fillText('1 • 2 • 3 • INT', size / 2, size / 2 + 82);
+        ctx.fillText('LIGA & DARTS', size / 2, size / 2 + 82);
 
         const pngUrl = canvas.toDataURL('image/png');
         document.getElementById('app-favicon').href = pngUrl;
@@ -306,7 +343,9 @@
 
     let visibleNews = [];
     let allNews = [];
+    let currentMainTab = 'football';
     let currentLeagueFilter = 'ALL';
+    let currentWorldFilter = 'ALL';
     let currentTeamFilter = 'ALL';
     let onlyToday = true;
     let searchQuery = '';
@@ -350,7 +389,9 @@
         return;
       }
 
-      bar.innerHTML = sources.map(src => {
+      const tabSources = sources.filter(s => (s.tab || 'football') === currentMainTab);
+
+      bar.innerHTML = tabSources.map(src => {
         const badgeStyle = src.ok
           ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/35'
           : 'bg-rose-500/15 text-rose-300 border-rose-500/35';
@@ -371,7 +412,7 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
           savedAt: Date.now(),
           sources: payload.sources || [],
-          items: (payload.items || []).slice(0, 220)
+          items: (payload.items || []).slice(0, 260)
         }));
       } catch (_) {}
     }
@@ -384,6 +425,8 @@
         return null;
       }
     }
+
+    let lastSourcesData = [];
 
     async function loadFromWorker() {
       const btn = document.getElementById('refresh-btn');
@@ -399,8 +442,9 @@
         items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
         allNews = items;
-        saveCache({ sources: data.sources || [], items });
-        renderSourcesStatus(data.sources || []);
+        lastSourcesData = data.sources || [];
+        saveCache({ sources: lastSourcesData, items });
+        renderSourcesStatus(lastSourcesData);
         renderNews();
 
         const nowStr = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -409,11 +453,13 @@
         const cached = loadCache();
         if (cached && Array.isArray(cached.items) && cached.items.length > 0) {
           allNews = cached.items;
-          renderSourcesStatus(cached.sources || []);
+          lastSourcesData = cached.sources || [];
+          renderSourcesStatus(lastSourcesData);
           renderNews();
           document.getElementById('last-updated').textContent = `Cache (${err.message})`;
         } else {
           allNews = [];
+          lastSourcesData = [];
           renderSourcesStatus([]);
           renderNews(err.message);
           document.getElementById('last-updated').textContent = `Fehler: ${err.message}`;
@@ -429,11 +475,14 @@
       if (league === 'BL2') return 'bg-sky-500/20 text-sky-300 border-sky-500/40';
       if (league === 'BL3') return 'bg-amber-500/20 text-amber-300 border-amber-500/40';
       if (league === 'INT') return 'bg-purple-500/20 text-purple-300 border-purple-500/40';
+      if (league === 'DARTS') return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+      if (league === 'WORLD_FB') return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
+      if (league === 'WORLD_SPORT') return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40';
       return 'bg-slate-700 text-slate-200 border-slate-600';
     }
 
     function matchesSelectedTeam(item) {
-      if (currentTeamFilter === 'ALL') return true;
+      if (currentMainTab !== 'football' || currentTeamFilter === 'ALL') return true;
       const keywords = TEAM_KEYWORDS[currentTeamFilter] || [];
       const haystack = `${item.title || ''} ${item.description || ''}`.toLowerCase();
       return keywords.some(kw => haystack.includes(kw));
@@ -508,13 +557,25 @@
       const countEl = document.getElementById('news-count');
 
       visibleNews = allNews.filter(item => {
+        const itemTab = item.tab || 'football';
+        if (itemTab !== currentMainTab) return false;
+
         const matchesDay = !onlyToday || isSameDay(item.timestamp);
-        const matchesLeague = currentLeagueFilter === 'ALL' || item.league === currentLeagueFilter;
-        const matchesTeam = matchesSelectedTeam(item);
-        const matchesSearch = !searchQuery ||
-          (item.title || '').toLowerCase().includes(searchQuery) ||
-          (item.description || '').toLowerCase().includes(searchQuery);
-        return matchesDay && matchesLeague && matchesTeam && matchesSearch;
+
+        if (currentMainTab === 'football') {
+          const matchesLeague = currentLeagueFilter === 'ALL' || item.league === currentLeagueFilter;
+          const matchesTeam = matchesSelectedTeam(item);
+          const matchesSearch = !searchQuery ||
+            (item.title || '').toLowerCase().includes(searchQuery) ||
+            (item.description || '').toLowerCase().includes(searchQuery);
+          return matchesDay && matchesLeague && matchesTeam && matchesSearch;
+        } else {
+          const matchesWorldCat = currentWorldFilter === 'ALL' || item.league === currentWorldFilter;
+          const matchesWorldSearch = !searchQuery ||
+            (item.title || '').toLowerCase().includes(searchQuery) ||
+            (item.description || '').toLowerCase().includes(searchQuery);
+          return matchesDay && matchesWorldCat && matchesWorldSearch;
+        }
       });
 
       const dayLabel = onlyToday ? ' (heute)' : ' (alle Tage)';
@@ -524,7 +585,7 @@
         container.innerHTML = `
           <div class="col-span-full text-center py-12 px-4 text-slate-400 border border-dashed border-slate-700 rounded-xl">
             <p class="font-semibold text-slate-200 mb-1">Keine Meldungen angezeigt</p>
-            <p class="text-xs text-slate-400">${errorMessage || (onlyToday ? 'Für den heutigen Tag liegen aktuell keine passenden Meldungen vor.' : 'Kein Treffer für den gewählten Filter.')}</p>
+            <p class="text-xs text-slate-400">${errorMessage || (onlyToday ? 'Für den heutigen Tag liegen aktuell keine passenden Meldungen vor. Teste ggf. „Nur heute: AUS“.' : 'Kein Treffer für den gewählten Filter.')}</p>
           </div>`;
         return;
       }
@@ -570,6 +631,40 @@
       }).join('');
     }
 
+    document.querySelectorAll('.main-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.main-tab-btn').forEach(b => {
+          b.classList.remove('gold-bg', 'font-extrabold');
+          b.classList.add('bg-slate-800/80', 'text-slate-200', 'font-bold');
+        });
+        btn.classList.remove('bg-slate-800/80', 'text-slate-200', 'font-bold');
+        btn.classList.add('gold-bg', 'font-extrabold');
+
+        currentMainTab = btn.dataset.tab;
+        searchQuery = '';
+        document.getElementById('search-input').value = '';
+        document.getElementById('world-search-input').value = '';
+
+        const fbSub = document.getElementById('football-subfilters');
+        const worldSub = document.getElementById('world-subfilters');
+
+        if (currentMainTab === 'football') {
+          fbSub.classList.remove('hidden');
+          fbSub.classList.add('flex');
+          worldSub.classList.add('hidden');
+          worldSub.classList.remove('flex');
+        } else {
+          fbSub.classList.add('hidden');
+          fbSub.classList.remove('flex');
+          worldSub.classList.remove('hidden');
+          worldSub.classList.add('flex');
+        }
+
+        renderSourcesStatus(lastSourcesData);
+        renderNews();
+      });
+    });
+
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => {
@@ -580,6 +675,20 @@
         btn.classList.add('gold-bg', 'font-bold');
 
         currentLeagueFilter = btn.dataset.filter;
+        renderNews();
+      });
+    });
+
+    document.querySelectorAll('.world-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.world-btn').forEach(b => {
+          b.classList.remove('gold-bg', 'font-bold');
+          b.classList.add('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        });
+        btn.classList.remove('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        btn.classList.add('gold-bg', 'font-bold');
+
+        currentWorldFilter = btn.dataset.world;
         renderNews();
       });
     });
@@ -618,12 +727,18 @@
       renderNews();
     });
 
+    document.getElementById('world-search-input').addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim().toLowerCase();
+      renderNews();
+    });
+
     generateNewsAppIcons();
 
     const initialCache = loadCache();
     if (initialCache && Array.isArray(initialCache.items) && initialCache.items.length > 0) {
       allNews = initialCache.items;
-      renderSourcesStatus(initialCache.sources || []);
+      lastSourcesData = initialCache.sources || [];
+      renderSourcesStatus(lastSourcesData);
       renderNews();
     }
 
