@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="NEWS" />
   <meta name="theme-color" content="#070d1a" />
-  <title>Fußball NEWS | 1., 2. & 3. Liga</title>
+  <title>Fußball NEWS | 1., 2., 3. Liga &amp; Pokal/Int.</title>
   <link id="app-favicon" rel="icon" type="image/png" />
   <link id="apple-touch-icon" rel="apple-touch-icon" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -66,7 +66,7 @@
         <div class="w-11 h-11 rounded-xl border gold-border bg-gradient-to-br from-[#0f172a] to-[#050b14] flex flex-col items-center justify-center shadow-lg shrink-0 relative overflow-hidden">
           <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           <span class="text-[11px] font-black tracking-wider gold-text leading-none">NEWS</span>
-          <span class="text-[8px] font-bold tracking-widest text-slate-300 mt-0.5">1•2•3</span>
+          <span class="text-[8px] font-bold tracking-widest text-slate-300 mt-0.5">1•2•3•INT</span>
         </div>
 
         <div>
@@ -76,7 +76,7 @@
             </h1>
           </div>
           <p class="text-xs text-slate-400">
-            1. Bundesliga • 2. Bundesliga • 3. Liga
+            1., 2. &amp; 3. Liga • Pokal, Länderspiele &amp; Internationales
           </p>
         </div>
       </div>
@@ -111,11 +111,11 @@
       </div>
     </div>
 
-    <!-- Liga-Filter, Tagesfilter & Suchleiste -->
+    <!-- Liga-/Bereichs-Filter, Tagesfilter & Suchleiste -->
     <div class="max-w-5xl mx-auto px-4 pb-2.5 flex flex-col sm:flex-row gap-2.5 justify-between">
       <div class="flex flex-wrap items-center gap-1.5" id="league-filters">
         <button data-filter="ALL" class="filter-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
-          Alle Ligen
+          Alle News
         </button>
         <button data-filter="BL1" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
           1. Bundesliga
@@ -126,6 +126,9 @@
         <button data-filter="BL3" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
           3. Liga
         </button>
+        <button data-filter="INT" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          Pokal &amp; Int.
+        </button>
         <button type="button" id="today-toggle-btn"
           class="gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer border gold-border">
           📅 Nur heute: AN
@@ -133,7 +136,7 @@
       </div>
 
       <div class="relative sm:w-64">
-        <input type="text" id="search-input" placeholder="Freie Suche (Verein, Spieler, Thema)..."
+        <input type="text" id="search-input" placeholder="Freie Suche (Verein, DFB, CL, Thema)..."
           class="w-full bg-slate-900/90 border border-slate-700 focus:border-[#d4af37] focus:outline-none rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-400" />
       </div>
     </div>
@@ -189,7 +192,7 @@
         <span class="text-slate-600">|</span>
         <span class="gold-text font-mono text-[11px]">J. SCHÜTZENDORF WEB &amp; CODE</span>
       </div>
-      <span class="text-[11px] text-slate-500">1., 2. &amp; 3. Liga Live-Feed</span>
+      <span class="text-[11px] text-slate-500">1., 2., 3. Liga &amp; Pokal/Int. Live-Feed</span>
     </div>
   </footer>
 
@@ -211,7 +214,7 @@
         </button>
       </div>
 
-      <!-- Modal Inhalt (scrollbar bei längeren Texten) -->
+      <!-- Modal Inhalt -->
       <div class="p-5 sm:p-6 overflow-y-auto space-y-4">
         <h2 id="modal-title" class="text-lg sm:text-xl font-extrabold text-white leading-snug"></h2>
 
@@ -246,7 +249,7 @@
 
   <script>
     const WORKER_URL = 'https://bundesliga-news.jelenbreaker.workers.dev/';
-    const STORAGE_KEY = 'bl_worker_news_cache_v5';
+    const STORAGE_KEY = 'bl_worker_news_cache_v6';
 
     // Textlänge auf "lang" (0 = ungekürzter Beschreibungstext aus den Feeds)
     const MAX_DESC_CHARS = 0;
@@ -292,8 +295,8 @@
         ctx.fillText('NEWS', size / 2, size / 2 - 18);
 
         ctx.fillStyle = '#f1f5f9';
-        ctx.font = '700 40px system-ui, -apple-system, sans-serif';
-        ctx.fillText('1 • 2 • 3 LIGA', size / 2, size / 2 + 82);
+        ctx.font = '700 36px system-ui, -apple-system, sans-serif';
+        ctx.fillText('1 • 2 • 3 • INT', size / 2, size / 2 + 82);
 
         const pngUrl = canvas.toDataURL('image/png');
         document.getElementById('app-favicon').href = pngUrl;
@@ -368,7 +371,7 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
           savedAt: Date.now(),
           sources: payload.sources || [],
-          items: (payload.items || []).slice(0, 180)
+          items: (payload.items || []).slice(0, 220)
         }));
       } catch (_) {}
     }
@@ -425,6 +428,7 @@
       if (league === 'BL1') return 'bg-red-500/20 text-red-300 border-red-500/40';
       if (league === 'BL2') return 'bg-sky-500/20 text-sky-300 border-sky-500/40';
       if (league === 'BL3') return 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+      if (league === 'INT') return 'bg-purple-500/20 text-purple-300 border-purple-500/40';
       return 'bg-slate-700 text-slate-200 border-slate-600';
     }
 
