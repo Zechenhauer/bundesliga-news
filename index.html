@@ -68,18 +68,21 @@
         </div>
       </div>
 
-      <!-- Rechts: Webmanagement Logo + Refresh -->
+      <!-- Rechts: Webmanagement Logo (logo.png) + Refresh -->
       <div class="flex items-center justify-between sm:justify-end gap-3">
-        <!-- Webmanagement Jürgen Schützendorf Logo -->
-        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-900/90 border gold-border">
-          <svg class="w-6 h-6 shrink-0" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Webmanagement Jürgen Schützendorf mit logo.png -->
+        <div class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg bg-slate-900/90 border gold-border">
+          <img src="./logo.png" alt="J. Schützendorf Webmanagement Logo"
+            class="w-8 h-8 rounded-md object-contain bg-[#070d1a] p-0.5 shrink-0"
+            onerror="this.style.display='none'; document.getElementById('header-logo-fallback').classList.remove('hidden');" />
+          <svg id="header-logo-fallback" class="w-7 h-7 shrink-0 hidden" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="1" y="1" width="34" height="34" rx="8" fill="#070d1a" stroke="#d4af37" stroke-width="1.5"/>
             <path d="M12 13L7.5 18L12 23" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M24 13L28.5 18L24 23" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M19.5 11L16.5 25" stroke="#f8fafc" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
           <div class="leading-tight">
-            <div class="text-[10px] font-extrabold tracking-wider text-white uppercase">
+            <div class="text-[11px] font-extrabold tracking-wider text-white uppercase">
               J. Schützendorf
             </div>
             <div class="text-[9px] font-bold tracking-widest gold-text uppercase">
@@ -95,9 +98,9 @@
       </div>
     </div>
 
-    <!-- Liga-Filter & Suchleiste -->
+    <!-- Liga-Filter, Tagesfilter & Suchleiste -->
     <div class="max-w-5xl mx-auto px-4 pb-2.5 flex flex-col sm:flex-row gap-2.5 justify-between">
-      <div class="flex flex-wrap gap-1.5" id="league-filters">
+      <div class="flex flex-wrap items-center gap-1.5" id="league-filters">
         <button data-filter="ALL" class="filter-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
           Alle Ligen
         </button>
@@ -109,6 +112,10 @@
         </button>
         <button data-filter="BL3" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
           3. Liga
+        </button>
+        <button type="button" id="today-toggle-btn"
+          class="gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer border gold-border">
+          📅 Nur heute: AN
         </button>
       </div>
 
@@ -158,16 +165,13 @@
     </div>
   </main>
 
-  <!-- Footer mit Webmanagement Logo -->
+  <!-- Footer mit Webmanagement Logo (logo.png) -->
   <footer class="border-t border-slate-800/80 py-4 px-4">
     <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
       <div class="flex items-center gap-2">
-        <svg class="w-5 h-5" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="1" y="1" width="34" height="34" rx="8" fill="#070d1a" stroke="#d4af37" stroke-width="1.5"/>
-          <path d="M12 13L7.5 18L12 23" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M24 13L28.5 18L24 23" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M19.5 11L16.5 25" stroke="#f8fafc" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
+        <img src="./logo.png" alt="J. Schützendorf Webmanagement Logo"
+          class="w-6 h-6 rounded object-contain bg-[#070d1a] p-0.5 shrink-0"
+          onerror="this.style.display='none';" />
         <span class="font-semibold text-slate-300">Webmanagement Jürgen Schützendorf</span>
         <span class="text-slate-600">|</span>
         <span class="gold-text font-mono text-[11px]">J. SCHÜTZENDORF WEB &amp; CODE</span>
@@ -178,7 +182,10 @@
 
   <script>
     const WORKER_URL = 'https://bundesliga-news.jelenbreaker.workers.dev/';
-    const STORAGE_KEY = 'bl_worker_news_cache_v3';
+    const STORAGE_KEY = 'bl_worker_news_cache_v4';
+
+    // Textlänge auf "lang" (0 = ungekürzter Beschreibungstext aus den Feeds)
+    const MAX_DESC_CHARS = 0;
 
     const TEAM_KEYWORDS = {
       BAYERN: ['bayern münchen', 'fc bayern', 'fcb', 'münchen'],
@@ -233,7 +240,25 @@
     let allNews = [];
     let currentLeagueFilter = 'ALL';
     let currentTeamFilter = 'ALL';
+    let onlyToday = true;
     let searchQuery = '';
+
+    function isSameDay(timestamp, referenceMs = Date.now()) {
+      if (!timestamp) return false;
+      const a = new Date(timestamp);
+      const b = new Date(referenceMs);
+      return (
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate()
+      );
+    }
+
+    function formatDescription(text = '') {
+      const clean = text.trim();
+      if (!MAX_DESC_CHARS || clean.length <= MAX_DESC_CHARS) return clean;
+      return clean.slice(0, MAX_DESC_CHARS).trimEnd() + '…';
+    }
 
     function formatTime(timestamp) {
       if (!timestamp) return 'Datum unbekannt';
@@ -349,27 +374,30 @@
       const countEl = document.getElementById('news-count');
 
       const filtered = allNews.filter(item => {
+        const matchesDay = !onlyToday || isSameDay(item.timestamp);
         const matchesLeague = currentLeagueFilter === 'ALL' || item.league === currentLeagueFilter;
         const matchesTeam = matchesSelectedTeam(item);
         const matchesSearch = !searchQuery ||
           (item.title || '').toLowerCase().includes(searchQuery) ||
           (item.description || '').toLowerCase().includes(searchQuery);
-        return matchesLeague && matchesTeam && matchesSearch;
+        return matchesDay && matchesLeague && matchesTeam && matchesSearch;
       });
 
-      countEl.textContent = `${filtered.length} aktuelle Meldungen`;
+      const dayLabel = onlyToday ? ' (heute)' : ' (alle Tage)';
+      countEl.textContent = `${filtered.length} aktuelle Meldungen${dayLabel}`;
 
       if (filtered.length === 0) {
         container.innerHTML = `
           <div class="col-span-full text-center py-12 px-4 text-slate-400 border border-dashed border-slate-700 rounded-xl">
             <p class="font-semibold text-slate-200 mb-1">Keine Meldungen angezeigt</p>
-            <p class="text-xs text-slate-400">${errorMessage || 'Für den aktuellen Team-/Liga-Filter liegen gerade keine Treffer in den Feeds vor.'}</p>
+            <p class="text-xs text-slate-400">${errorMessage || (onlyToday ? 'Für den heutigen Tag liegen aktuell keine passenden Meldungen vor.' : 'Kein Treffer für den gewählten Filter.')}</p>
           </div>`;
         return;
       }
 
       container.innerHTML = filtered.map(item => {
         const badgeColor = getLeagueBadgeStyle(item.league);
+        const fullDesc = formatDescription(item.description || '');
 
         return `
           <a href="${item.link}" target="_blank" rel="noopener noreferrer"
@@ -393,8 +421,8 @@
                 ${item.title}
               </h2>
 
-              <p class="text-xs text-slate-400 line-clamp-3 leading-relaxed">
-                ${item.description || ''}
+              <p class="text-xs text-slate-300/90 leading-relaxed whitespace-pre-line">
+                ${fullDesc}
               </p>
             </div>
 
@@ -419,6 +447,21 @@
         currentLeagueFilter = btn.dataset.filter;
         renderNews();
       });
+    });
+
+    const todayBtn = document.getElementById('today-toggle-btn');
+    todayBtn.addEventListener('click', () => {
+      onlyToday = !onlyToday;
+      if (onlyToday) {
+        todayBtn.textContent = '📅 Nur heute: AN';
+        todayBtn.classList.add('gold-bg', 'font-bold');
+        todayBtn.classList.remove('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+      } else {
+        todayBtn.textContent = '📅 Nur heute: AUS';
+        todayBtn.classList.remove('gold-bg', 'font-bold');
+        todayBtn.classList.add('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+      }
+      renderNews();
     });
 
     document.querySelectorAll('.team-btn').forEach(btn => {
