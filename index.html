@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="NEWS" />
   <meta name="theme-color" content="#070d1a" />
-  <title>Fußball &amp; Sport NEWS | Liga, Pokal &amp; Darts</title>
+  <title>NEWS Ticker | Fußball, Darts &amp; Regio</title>
   <link id="app-favicon" rel="icon" type="image/png" />
   <link id="apple-touch-icon" rel="apple-touch-icon" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -62,28 +62,26 @@
     <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <!-- Links: NEWS App-Logo + Titel -->
       <div class="flex items-center gap-3">
-        <!-- SVG NEWS Logo -->
         <div class="w-11 h-11 rounded-xl border gold-border bg-gradient-to-br from-[#0f172a] to-[#050b14] flex flex-col items-center justify-center shadow-lg shrink-0 relative overflow-hidden">
           <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           <span class="text-[11px] font-black tracking-wider gold-text leading-none">NEWS</span>
-          <span class="text-[8px] font-bold tracking-widest text-slate-300 mt-0.5">SPORT</span>
+          <span class="text-[8px] font-bold tracking-widest text-slate-300 mt-0.5">LIVE</span>
         </div>
 
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-lg sm:text-xl font-extrabold tracking-wide uppercase">
-              Sport &amp; Fußball <span class="gold-text">NEWS-Ticker</span>
+              Sport &amp; Regio <span class="gold-text">NEWS-Ticker</span>
             </h1>
           </div>
           <p class="text-xs text-slate-400">
-            1., 2., 3. Liga &amp; Pokal • Darts &amp; Sport aus aller Welt
+            Fußball (1.–3. Liga &amp; Pokal/CL) • Darts &amp; Welt-Sport • Niederrhein &amp; Ruhrgebiet
           </p>
         </div>
       </div>
 
       <!-- Rechts: Webmanagement Logo (logo.png) + Refresh -->
       <div class="flex items-center justify-between sm:justify-end gap-3">
-        <!-- Webmanagement Jürgen Schützendorf mit logo.png -->
         <div class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg bg-slate-900/90 border gold-border">
           <img src="./logo.png" alt="J. Schützendorf Webmanagement Logo"
             class="w-8 h-8 rounded-md object-contain bg-[#070d1a] p-0.5 shrink-0"
@@ -111,16 +109,20 @@
       </div>
     </div>
 
-    <!-- Haupt-Tabs: Fußball vs. Sport aus aller Welt (inkl. Darts) -->
+    <!-- Haupt-Tabs: Fußball | Sport / Darts | Regio & Ruhrgebiet -->
     <div class="max-w-5xl mx-auto px-4 pb-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/70 mb-2.5">
-      <div class="flex items-center gap-2" id="main-tabs">
+      <div class="flex flex-wrap items-center gap-2" id="main-tabs">
         <button type="button" data-tab="football"
           class="main-tab-btn gold-bg px-3.5 py-1.5 rounded-lg text-xs font-extrabold cursor-pointer">
-          ⚽ Fußball (1.–3. Liga &amp; Pokal)
+          ⚽ Fußball (1.–3. Liga &amp; CL)
         </button>
         <button type="button" data-tab="world"
           class="main-tab-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
           🎯 Sport / Darts (Welt)
+        </button>
+        <button type="button" data-tab="regio"
+          class="main-tab-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+          🏙️ Regio &amp; Ruhrgebiet
         </button>
       </div>
 
@@ -130,7 +132,7 @@
       </button>
     </div>
 
-    <!-- Unterfilter Fußball -->
+    <!-- Unterfilter Tab 1: Fußball -->
     <div id="football-subfilters" class="max-w-5xl mx-auto px-4 pb-2.5 flex flex-col gap-2">
       <div class="flex flex-col sm:flex-row gap-2.5 justify-between">
         <div class="flex flex-wrap items-center gap-1.5" id="league-filters">
@@ -152,7 +154,7 @@
         </div>
 
         <div class="relative sm:w-64">
-          <input type="text" id="search-input" placeholder="Suche (Verein, Spieler, Darts, Thema)..."
+          <input type="text" id="search-input" placeholder="Suche (Verein, Spieler, Thema)..."
             class="w-full bg-slate-900/90 border border-slate-700 focus:border-[#d4af37] focus:outline-none rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-400" />
         </div>
       </div>
@@ -178,7 +180,7 @@
       </div>
     </div>
 
-    <!-- Unterfilter Sport / Darts (Welt) -->
+    <!-- Unterfilter Tab 2: Sport / Darts (Welt) -->
     <div id="world-subfilters" class="max-w-5xl mx-auto px-4 pb-3 hidden flex-col sm:flex-row gap-2.5 justify-between">
       <div class="flex flex-wrap items-center gap-1.5" id="world-category-filters">
         <button data-world="ALL" class="world-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
@@ -198,6 +200,40 @@
       <div class="relative sm:w-64">
         <input type="text" id="world-search-input" placeholder="Suche (Darts, PDC, Premier League, Sport)..."
           class="w-full bg-slate-900/90 border border-slate-700 focus:border-[#d4af37] focus:outline-none rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-400" />
+      </div>
+    </div>
+
+    <!-- Unterfilter Tab 3: Regio & Ruhrgebiet (inkl. Essen & Fokus-Priorität) -->
+    <div id="regio-subfilters" class="max-w-5xl mx-auto px-4 pb-3 hidden flex-col gap-2">
+      <div class="flex flex-col sm:flex-row gap-2.5 justify-between">
+        <div class="flex flex-wrap items-center gap-1.5" id="regio-city-filters">
+          <button data-regio="ALL" class="regio-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+            Alle (Fokus zuerst)
+          </button>
+          <button data-regio="FOCUS" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            ⭐ Nur Fokus-Städte
+          </button>
+          <button data-regio="NIEDERRHEIN_MOERS_DU" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            Niederrhein / Moers / DU
+          </button>
+          <button data-regio="ESSEN" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            Essen
+          </button>
+          <button data-regio="OBERHAUSEN" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            Oberhausen
+          </button>
+          <button data-regio="GELSENKIRCHEN" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            Gelsenkirchen
+          </button>
+          <button data-regio="BOTTROP" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            Bottrop
+          </button>
+        </div>
+
+        <div class="relative sm:w-64">
+          <input type="text" id="regio-search-input" placeholder="Suche (Moers, Duisburg, Essen, A40)..."
+            class="w-full bg-slate-900/90 border border-slate-700 focus:border-[#d4af37] focus:outline-none rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-400" />
+        </div>
       </div>
     </div>
   </header>
@@ -232,7 +268,7 @@
         <span class="text-slate-600">|</span>
         <span class="gold-text font-mono text-[11px]">J. SCHÜTZENDORF WEB &amp; CODE</span>
       </div>
-      <span class="text-[11px] text-slate-500">Fußball, Pokal, Darts &amp; Welt-Sport</span>
+      <span class="text-[11px] text-slate-500">Fußball, Darts, Niederrhein &amp; Ruhrgebiet</span>
     </div>
   </footer>
 
@@ -286,7 +322,7 @@
 
   <script>
     const WORKER_URL = 'https://bundesliga-news.jelenbreaker.workers.dev/';
-    const STORAGE_KEY = 'bl_worker_news_cache_v7';
+    const STORAGE_KEY = 'bl_worker_news_cache_v10';
 
     // Textlänge auf "lang" (0 = ungekürzter Beschreibungstext aus den Feeds)
     const MAX_DESC_CHARS = 0;
@@ -297,6 +333,41 @@
       MSV: ['msv duisburg', 'duisburg', 'zebras', 'msv'],
       RWE: ['rot-weiss essen', 'rot-weiß essen', 'rot weiss essen', 'rot weiß essen', 'rwe', 'essen']
     };
+
+    // Fokus-Regionen mit absteigender Priorität:
+    // Moers (7) > Duisburg (6) > Niederrhein/Kreis Wesel (5) > Essen (4) > Oberhausen (3) > Gelsenkirchen (2) > Bottrop (1)
+    const REGIO_PRIORITY_RULES = [
+      { key: 'MOERS', label: 'Moers', score: 7, keywords: ['moers', 'kapellen', 'repelen', 'rheinkamp', 'utfort', 'schwafel', 'meerbeck', 'asberg', 'hochstraß', 'scherpenberg'] },
+      { key: 'DUISBURG', label: 'Duisburg', score: 6, keywords: ['duisburg', 'homberg', 'rheinhausen', 'hamborn', 'marxloh', 'ruhrort', 'meiderich', 'walsum', 'buchholz', 'hochfeld'] },
+      { key: 'NIEDERRHEIN', label: 'Niederrhein', score: 5, keywords: ['niederrhein', 'kreis wesel', 'wesel', 'kamp-lintfort', 'neukirchen-vluyn', 'rheinberg', 'xanten', 'dinslaken', 'voerde', 'alpen', 'sonsbeck', 'hamminkeln', 'kleve', 'geldern', 'kevelaer', 'goch', 'emmerich', 'rees'] },
+      { key: 'ESSEN', label: 'Essen', score: 4, keywords: ['stadt essen', 'in essen', 'aus essen', 'für essen', 'essen-', 'rüttenscheid', 'steele', 'borbeck', 'werden', 'kettwig', 'altenessen', 'katernberg', 'frohnhausen', 'holsterhausen', 'bredeney', 'gruga', 'baldeneysee'] },
+      { key: 'OBERHAUSEN', label: 'Oberhausen', score: 3, keywords: ['oberhausen', 'sterkrade', 'osterfeld'] },
+      { key: 'GELSENKIRCHEN', label: 'Gelsenkirchen', score: 2, keywords: ['gelsenkirchen', 'buer', 'schalke'] },
+      { key: 'BOTTROP', label: 'Bottrop', score: 1, keywords: ['bottrop', 'kirchhellen'] }
+    ];
+
+    function getRegioMatchInfo(item) {
+      const haystack = `${item.title || ''} ${item.description || ''}`.toLowerCase();
+      const matched = REGIO_PRIORITY_RULES.filter(rule => {
+        if (rule.key === 'ESSEN') {
+          const hasStadtEssen = /\bessen\b/.test(haystack) && !/\b(zu essen|beim essen|gutes essen|warmes essen|essen gehen|essen trinken)\b/.test(haystack);
+          return hasStadtEssen || rule.keywords.some(kw => haystack.includes(kw));
+        }
+        return rule.keywords.some(kw => haystack.includes(kw));
+      });
+
+      if (matched.length === 0) {
+        return { isFocus: false, topScore: 0, badges: [], keys: [] };
+      }
+
+      matched.sort((a, b) => b.score - a.score);
+      return {
+        isFocus: true,
+        topScore: matched[0].score,
+        badges: matched.map(m => m.label),
+        keys: matched.map(m => m.key)
+      };
+    }
 
     function generateNewsAppIcons() {
       try {
@@ -332,8 +403,8 @@
         ctx.fillText('NEWS', size / 2, size / 2 - 18);
 
         ctx.fillStyle = '#f1f5f9';
-        ctx.font = '700 36px system-ui, -apple-system, sans-serif';
-        ctx.fillText('LIGA & DARTS', size / 2, size / 2 + 82);
+        ctx.font = '700 34px system-ui, -apple-system, sans-serif';
+        ctx.fillText('SPORT & REGIO', size / 2, size / 2 + 82);
 
         const pngUrl = canvas.toDataURL('image/png');
         document.getElementById('app-favicon').href = pngUrl;
@@ -346,6 +417,7 @@
     let currentMainTab = 'football';
     let currentLeagueFilter = 'ALL';
     let currentWorldFilter = 'ALL';
+    let currentRegioFilter = 'ALL';
     let currentTeamFilter = 'ALL';
     let onlyToday = true;
     let searchQuery = '';
@@ -412,7 +484,7 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
           savedAt: Date.now(),
           sources: payload.sources || [],
-          items: (payload.items || []).slice(0, 260)
+          items: (payload.items || []).slice(0, 320)
         }));
       } catch (_) {}
     }
@@ -478,6 +550,8 @@
       if (league === 'DARTS') return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
       if (league === 'WORLD_FB') return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
       if (league === 'WORLD_SPORT') return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40';
+      if (league === 'REGIO_NR') return 'bg-teal-500/20 text-teal-300 border-teal-500/40';
+      if (league === 'REGIO_RG') return 'bg-orange-500/20 text-orange-300 border-orange-500/40';
       return 'bg-slate-700 text-slate-200 border-slate-600';
     }
 
@@ -556,7 +630,7 @@
       const container = document.getElementById('news-container');
       const countEl = document.getElementById('news-count');
 
-      visibleNews = allNews.filter(item => {
+      let filtered = allNews.filter(item => {
         const itemTab = item.tab || 'football';
         if (itemTab !== currentMainTab) return false;
 
@@ -569,14 +643,50 @@
             (item.title || '').toLowerCase().includes(searchQuery) ||
             (item.description || '').toLowerCase().includes(searchQuery);
           return matchesDay && matchesLeague && matchesTeam && matchesSearch;
-        } else {
+        }
+
+        if (currentMainTab === 'world') {
           const matchesWorldCat = currentWorldFilter === 'ALL' || item.league === currentWorldFilter;
           const matchesWorldSearch = !searchQuery ||
             (item.title || '').toLowerCase().includes(searchQuery) ||
             (item.description || '').toLowerCase().includes(searchQuery);
           return matchesDay && matchesWorldCat && matchesWorldSearch;
         }
+
+        // Tab 3: Regio & Ruhrgebiet (strenger Fokus-Filter ohne Bonn/Köln/Düsseldorf)
+        const regioInfo = getRegioMatchInfo(item);
+        let matchesRegioCat = true;
+        if (currentRegioFilter === 'FOCUS') {
+          matchesRegioCat = regioInfo.isFocus;
+        } else if (currentRegioFilter === 'NIEDERRHEIN_MOERS_DU') {
+          matchesRegioCat =
+            regioInfo.keys.includes('MOERS') ||
+            regioInfo.keys.includes('DUISBURG') ||
+            regioInfo.keys.includes('NIEDERRHEIN');
+        } else if (currentRegioFilter !== 'ALL') {
+          matchesRegioCat = regioInfo.keys.includes(currentRegioFilter);
+        }
+
+        const matchesRegioSearch = !searchQuery ||
+          (item.title || '').toLowerCase().includes(searchQuery) ||
+          (item.description || '').toLowerCase().includes(searchQuery);
+
+        return matchesDay && matchesRegioCat && matchesRegioSearch;
       });
+
+      // Im Regio-Tab nach Fokus-Priorität (Moers > Duisburg > Niederrhein > Essen > Oberhausen > Gelsenkirchen > Bottrop) und dann nach Aktualität sortieren
+      if (currentMainTab === 'regio') {
+        filtered = filtered
+          .map(item => ({ ...item, _regio: getRegioMatchInfo(item) }))
+          .sort((a, b) => {
+            if (b._regio.topScore !== a._regio.topScore) {
+              return b._regio.topScore - a._regio.topScore;
+            }
+            return (b.timestamp || 0) - (a.timestamp || 0);
+          });
+      }
+
+      visibleNews = filtered;
 
       const dayLabel = onlyToday ? ' (heute)' : ' (alle Tage)';
       countEl.textContent = `${visibleNews.length} aktuelle Meldungen${dayLabel}`;
@@ -593,20 +703,28 @@
       container.innerHTML = visibleNews.map((item, idx) => {
         const badgeColor = getLeagueBadgeStyle(item.league);
         const fullDesc = formatDescription(item.description || '');
+        const regioMeta = currentMainTab === 'regio' ? (item._regio || getRegioMatchInfo(item)) : null;
+        const focusCitiesBadge = regioMeta && regioMeta.badges.length > 0
+          ? `<span class="text-[11px] font-bold px-2 py-0.5 rounded bg-[#d4af37]/20 text-[#d4af37] border border-[#d4af37]/40">⭐ ${regioMeta.badges.join(' • ')}</span>`
+          : '';
+        const cardHighlight = regioMeta && regioMeta.isFocus
+          ? 'border-[#d4af37]/45'
+          : 'border-slate-800';
 
         return `
           <article onclick="openArticleModal(${idx})" role="button" tabindex="0"
              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openArticleModal(${idx});}"
-             class="news-card border border-slate-800 rounded-xl p-4 flex flex-col justify-between gap-3 cursor-pointer">
+             class="news-card border ${cardHighlight} rounded-xl p-4 flex flex-col justify-between gap-3 cursor-pointer">
             <div>
               <div class="flex items-center justify-between gap-2 mb-2">
-                <div class="flex items-center gap-1.5">
+                <div class="flex items-center flex-wrap gap-1.5">
                   <span class="text-[11px] font-bold px-2 py-0.5 rounded border ${badgeColor}">
                     ${item.leagueLabel || item.league}
                   </span>
                   <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
                     ${item.source}
                   </span>
+                  ${focusCitiesBadge}
                 </div>
                 <span class="text-[11px] gold-text font-medium whitespace-nowrap">
                   ${formatTime(item.timestamp)}
@@ -644,20 +762,26 @@
         searchQuery = '';
         document.getElementById('search-input').value = '';
         document.getElementById('world-search-input').value = '';
+        document.getElementById('regio-search-input').value = '';
 
         const fbSub = document.getElementById('football-subfilters');
         const worldSub = document.getElementById('world-subfilters');
+        const regioSub = document.getElementById('regio-subfilters');
+
+        [fbSub, worldSub, regioSub].forEach(el => {
+          el.classList.add('hidden');
+          el.classList.remove('flex');
+        });
 
         if (currentMainTab === 'football') {
           fbSub.classList.remove('hidden');
           fbSub.classList.add('flex');
-          worldSub.classList.add('hidden');
-          worldSub.classList.remove('flex');
-        } else {
-          fbSub.classList.add('hidden');
-          fbSub.classList.remove('flex');
+        } else if (currentMainTab === 'world') {
           worldSub.classList.remove('hidden');
           worldSub.classList.add('flex');
+        } else {
+          regioSub.classList.remove('hidden');
+          regioSub.classList.add('flex');
         }
 
         renderSourcesStatus(lastSourcesData);
@@ -693,6 +817,20 @@
       });
     });
 
+    document.querySelectorAll('.regio-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.regio-btn').forEach(b => {
+          b.classList.remove('gold-bg', 'font-bold');
+          b.classList.add('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        });
+        btn.classList.remove('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        btn.classList.add('gold-bg', 'font-bold');
+
+        currentRegioFilter = btn.dataset.regio;
+        renderNews();
+      });
+    });
+
     const todayBtn = document.getElementById('today-toggle-btn');
     todayBtn.addEventListener('click', () => {
       onlyToday = !onlyToday;
@@ -722,14 +860,11 @@
       });
     });
 
-    document.getElementById('search-input').addEventListener('input', (e) => {
-      searchQuery = e.target.value.trim().toLowerCase();
-      renderNews();
-    });
-
-    document.getElementById('world-search-input').addEventListener('input', (e) => {
-      searchQuery = e.target.value.trim().toLowerCase();
-      renderNews();
+    ['search-input', 'world-search-input', 'regio-search-input'].forEach(id => {
+      document.getElementById(id).addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim().toLowerCase();
+        renderNews();
+      });
     });
 
     generateNewsAppIcons();
