@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="NEWS" />
+  <meta name="theme-color" content="#070d1a" />
+  <title>Fußball NEWS | 1., 2. & 3. Liga</title>
+  <link id="app-favicon" rel="icon" type="image/png" />
+  <link id="apple-touch-icon" rel="apple-touch-icon" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg-dark: #070d1a;
+      --card-bg: #0f172a;
+      --gold: #d4af37;
+    }
+    body {
+      background-color: var(--bg-dark);
+      color: #f1f5f9;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .gold-border {
+      border-color: rgba(212, 175, 55, 0.35);
+    }
+    .gold-text {
+      color: var(--gold);
+    }
+    .gold-bg {
+      background-color: var(--gold);
+      color: #070d1a;
+    }
+    .news-card {
+      background-color: var(--card-bg);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .news-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--gold);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="border-b gold-border bg-[#050b14]/95 sticky top-0 z-20 backdrop-blur">
+    <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <!-- Links: NEWS App-Logo + Titel -->
+      <div class="flex items-center gap-3">
+        <!-- SVG NEWS Logo -->
+        <div class="w-11 h-11 rounded-xl border gold-border bg-gradient-to-br from-[#0f172a] to-[#050b14] flex flex-col items-center justify-center shadow-lg shrink-0 relative overflow-hidden">
+          <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-[11px] font-black tracking-wider gold-text leading-none">NEWS</span>
+          <span class="text-[8px] font-bold tracking-widest text-slate-300 mt-0.5">1•2•3</span>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-wide uppercase">
+              Fußball <span class="gold-text">NEWS-Ticker</span>
+            </h1>
+          </div>
+          <p class="text-xs text-slate-400">
+            1. Bundesliga • 2. Bundesliga • 3. Liga
+          </p>
+        </div>
+      </div>
+
+      <!-- Rechts: Webmanagement Logo + Refresh -->
+      <div class="flex items-center justify-between sm:justify-end gap-3">
+        <!-- Webmanagement Jürgen Schützendorf Logo -->
+        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-900/90 border gold-border">
+          <svg class="w-6 h-6 shrink-0" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="34" height="34" rx="8" fill="#070d1a" stroke="#d4af37" stroke-width="1.5"/>
+            <path d="M12 13L7.5 18L12 23" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M24 13L28.5 18L24 23" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19.5 11L16.5 25" stroke="#f8fafc" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <div class="leading-tight">
+            <div class="text-[10px] font-extrabold tracking-wider text-white uppercase">
+              J. Schützendorf
+            </div>
+            <div class="text-[9px] font-bold tracking-widest gold-text uppercase">
+              Webmanagement
+            </div>
+          </div>
+        </div>
+
+        <button onclick="loadFromWorker()" id="refresh-btn"
+          class="px-3 py-2 rounded-lg text-xs font-semibold border gold-border hover:bg-[#d4af37]/15 transition cursor-pointer shrink-0">
+          ↻ Neu
+        </button>
+      </div>
+    </div>
+
+    <!-- Liga-Filter & Suchleiste -->
+    <div class="max-w-5xl mx-auto px-4 pb-2.5 flex flex-col sm:flex-row gap-2.5 justify-between">
+      <div class="flex flex-wrap gap-1.5" id="league-filters">
+        <button data-filter="ALL" class="filter-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+          Alle Ligen
+        </button>
+        <button data-filter="BL1" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          1. Bundesliga
+        </button>
+        <button data-filter="BL2" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          2. Bundesliga
+        </button>
+        <button data-filter="BL3" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          3. Liga
+        </button>
+      </div>
+
+      <div class="relative sm:w-64">
+        <input type="text" id="search-input" placeholder="Freie Suche (Verein, Spieler, Thema)..."
+          class="w-full bg-slate-900/90 border border-slate-700 focus:border-[#d4af37] focus:outline-none rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-400" />
+      </div>
+    </div>
+
+    <!-- Team-Schnellfilter -->
+    <div class="max-w-5xl mx-auto px-4 pb-3 flex flex-wrap items-center gap-1.5" id="team-filters">
+      <span class="text-[11px] text-slate-400 mr-1 font-medium">Teams:</span>
+      <button data-team="ALL" class="team-btn gold-bg px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer">
+        Alle Teams
+      </button>
+      <button data-team="BAYERN" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
+        Bayern München
+      </button>
+      <button data-team="GLADBACH" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
+        Borussia Mönchengladbach
+      </button>
+      <button data-team="MSV" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
+        MSV Duisburg
+      </button>
+      <button data-team="RWE" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
+        Rot-Weiß Essen
+      </button>
+    </div>
+  </header>
+
+  <!-- Hauptbereich -->
+  <main class="max-w-5xl w-full mx-auto px-4 py-5 flex-1">
+    <!-- Trefferanzahl + Quellen-Status-Badges -->
+    <div class="mb-4 flex flex-col gap-2.5">
+      <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+        <span id="news-count">0 Meldungen geladen</span>
+        <span id="last-updated" class="text-[11px] text-slate-400">Warte auf Worker...</span>
+      </div>
+      <div id="sources-bar" class="flex flex-wrap gap-1.5">
+        <!-- Quellen-Status-Badges werden aus data.sources gerendert -->
+      </div>
+    </div>
+
+    <!-- News Liste -->
+    <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Kacheln werden per JS eingefügt -->
+    </div>
+  </main>
+
+  <!-- Footer mit Webmanagement Logo -->
+  <footer class="border-t border-slate-800/80 py-4 px-4">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="34" height="34" rx="8" fill="#070d1a" stroke="#d4af37" stroke-width="1.5"/>
+          <path d="M12 13L7.5 18L12 23" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M24 13L28.5 18L24 23" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M19.5 11L16.5 25" stroke="#f8fafc" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <span class="font-semibold text-slate-300">Webmanagement Jürgen Schützendorf</span>
+        <span class="text-slate-600">|</span>
+        <span class="gold-text font-mono text-[11px]">J. SCHÜTZENDORF WEB &amp; CODE</span>
+      </div>
+      <span class="text-[11px] text-slate-500">1., 2. &amp; 3. Liga Live-Feed</span>
+    </div>
+  </footer>
+
+  <script>
+    const WORKER_URL = 'https://bundesliga-news.jelenbreaker.workers.dev/';
+    const STORAGE_KEY = 'bl_worker_news_cache_v3';
+
+    const TEAM_KEYWORDS = {
+      BAYERN: ['bayern münchen', 'fc bayern', 'fcb', 'münchen'],
+      GLADBACH: ['mönchengladbach', 'gladbach', 'bmg', 'borussia mg', 'fohlen'],
+      MSV: ['msv duisburg', 'duisburg', 'zebras', 'msv'],
+      RWE: ['rot-weiss essen', 'rot-weiß essen', 'rot weiss essen', 'rot weiß essen', 'rwe', 'essen']
+    };
+
+    function generateNewsAppIcons() {
+      try {
+        const size = 512;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        const grad = ctx.createLinearGradient(0, 0, size, size);
+        grad.addColorStop(0, '#0f172a');
+        grad.addColorStop(1, '#050b14');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, size, size);
+
+        const pad = 28;
+        const r = 84;
+        ctx.strokeStyle = '#d4af37';
+        ctx.lineWidth = 12;
+        ctx.beginPath();
+        ctx.roundRect(pad, pad, size - pad * 2, size - pad * 2, r);
+        ctx.stroke();
+
+        ctx.fillStyle = '#34d399';
+        ctx.beginPath();
+        ctx.arc(size - 86, 88, 18, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#d4af37';
+        ctx.font = '900 124px system-ui, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('NEWS', size / 2, size / 2 - 18);
+
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = '700 40px system-ui, -apple-system, sans-serif';
+        ctx.fillText('1 • 2 • 3 LIGA', size / 2, size / 2 + 82);
+
+        const pngUrl = canvas.toDataURL('image/png');
+        document.getElementById('app-favicon').href = pngUrl;
+        document.getElementById('apple-touch-icon').href = pngUrl;
+      } catch (_) {}
+    }
+
+    let allNews = [];
+    let currentLeagueFilter = 'ALL';
+    let currentTeamFilter = 'ALL';
+    let searchQuery = '';
+
+    function formatTime(timestamp) {
+      if (!timestamp) return 'Datum unbekannt';
+      const now = Date.now();
+      const diffMin = Math.floor((now - timestamp) / 60000);
+      const dateObj = new Date(timestamp);
+      const timeStr = dateObj.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+      const dateStr = dateObj.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+      if (diffMin < 1) return `Gerade eben (${timeStr})`;
+      if (diffMin < 60) return `Vor ${diffMin} Min. (${timeStr})`;
+      if (diffMin < 1440) return `Heute, ${timeStr} Uhr`;
+      return `${dateStr} • ${timeStr} Uhr`;
+    }
+
+    function renderSourcesStatus(sources = []) {
+      const bar = document.getElementById('sources-bar');
+      if (!Array.isArray(sources) || sources.length === 0) {
+        bar.innerHTML = '';
+        return;
+      }
+
+      bar.innerHTML = sources.map(src => {
+        const badgeStyle = src.ok
+          ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/35'
+          : 'bg-rose-500/15 text-rose-300 border-rose-500/35';
+        const infoText = src.ok
+          ? `${src.source} (${src.league}): ${src.count}`
+          : `${src.source} (${src.league}): ${src.error || 'Fehler'}`;
+
+        return `
+          <span class="text-[11px] font-medium px-2.5 py-1 rounded-md border ${badgeStyle}">
+            ${src.ok ? '●' : '✕'} ${infoText}
+          </span>
+        `;
+      }).join('');
+    }
+
+    function saveCache(payload) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          savedAt: Date.now(),
+          sources: payload.sources || [],
+          items: (payload.items || []).slice(0, 180)
+        }));
+      } catch (_) {}
+    }
+
+    function loadCache() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    async function loadFromWorker() {
+      const btn = document.getElementById('refresh-btn');
+      btn.textContent = '⏳';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(WORKER_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Worker HTTP ${res.status}`);
+
+        const data = await res.json();
+        const items = Array.isArray(data.items) ? [...data.items] : [];
+        items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        allNews = items;
+        saveCache({ sources: data.sources || [], items });
+        renderSourcesStatus(data.sources || []);
+        renderNews();
+
+        const nowStr = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        document.getElementById('last-updated').textContent = `Stand: ${nowStr}`;
+      } catch (err) {
+        const cached = loadCache();
+        if (cached && Array.isArray(cached.items) && cached.items.length > 0) {
+          allNews = cached.items;
+          renderSourcesStatus(cached.sources || []);
+          renderNews();
+          document.getElementById('last-updated').textContent = `Cache (${err.message})`;
+        } else {
+          allNews = [];
+          renderSourcesStatus([]);
+          renderNews(err.message);
+          document.getElementById('last-updated').textContent = `Fehler: ${err.message}`;
+        }
+      } finally {
+        btn.textContent = '↻ Neu';
+        btn.disabled = false;
+      }
+    }
+
+    function getLeagueBadgeStyle(league) {
+      if (league === 'BL1') return 'bg-red-500/20 text-red-300 border-red-500/40';
+      if (league === 'BL2') return 'bg-sky-500/20 text-sky-300 border-sky-500/40';
+      if (league === 'BL3') return 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+      return 'bg-slate-700 text-slate-200 border-slate-600';
+    }
+
+    function matchesSelectedTeam(item) {
+      if (currentTeamFilter === 'ALL') return true;
+      const keywords = TEAM_KEYWORDS[currentTeamFilter] || [];
+      const haystack = `${item.title || ''} ${item.description || ''}`.toLowerCase();
+      return keywords.some(kw => haystack.includes(kw));
+    }
+
+    function renderNews(errorMessage = '') {
+      const container = document.getElementById('news-container');
+      const countEl = document.getElementById('news-count');
+
+      const filtered = allNews.filter(item => {
+        const matchesLeague = currentLeagueFilter === 'ALL' || item.league === currentLeagueFilter;
+        const matchesTeam = matchesSelectedTeam(item);
+        const matchesSearch = !searchQuery ||
+          (item.title || '').toLowerCase().includes(searchQuery) ||
+          (item.description || '').toLowerCase().includes(searchQuery);
+        return matchesLeague && matchesTeam && matchesSearch;
+      });
+
+      countEl.textContent = `${filtered.length} aktuelle Meldungen`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-12 px-4 text-slate-400 border border-dashed border-slate-700 rounded-xl">
+            <p class="font-semibold text-slate-200 mb-1">Keine Meldungen angezeigt</p>
+            <p class="text-xs text-slate-400">${errorMessage || 'Für den aktuellen Team-/Liga-Filter liegen gerade keine Treffer in den Feeds vor.'}</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const badgeColor = getLeagueBadgeStyle(item.league);
+
+        return `
+          <a href="${item.link}" target="_blank" rel="noopener noreferrer"
+             class="news-card border border-slate-800 rounded-xl p-4 flex flex-col justify-between gap-3 block">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-bold px-2 py-0.5 rounded border ${badgeColor}">
+                    ${item.leagueLabel || item.league}
+                  </span>
+                  <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                    ${item.source}
+                  </span>
+                </div>
+                <span class="text-[11px] gold-text font-medium whitespace-nowrap">
+                  ${formatTime(item.timestamp)}
+                </span>
+              </div>
+
+              <h2 class="text-base font-bold text-white leading-snug mb-1.5">
+                ${item.title}
+              </h2>
+
+              <p class="text-xs text-slate-400 line-clamp-3 leading-relaxed">
+                ${item.description || ''}
+              </p>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Artikel öffnen</span>
+              <span class="gold-text font-semibold">Weiterlesen →</span>
+            </div>
+          </a>
+        `;
+      }).join('');
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('gold-bg', 'font-bold');
+          b.classList.add('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        });
+        btn.classList.remove('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        btn.classList.add('gold-bg', 'font-bold');
+
+        currentLeagueFilter = btn.dataset.filter;
+        renderNews();
+      });
+    });
+
+    document.querySelectorAll('.team-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.team-btn').forEach(b => {
+          b.classList.remove('gold-bg', 'font-bold');
+          b.classList.add('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        });
+        btn.classList.remove('bg-slate-800/80', 'text-slate-200', 'font-semibold');
+        btn.classList.add('gold-bg', 'font-bold');
+
+        currentTeamFilter = btn.dataset.team;
+        renderNews();
+      });
+    });
+
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim().toLowerCase();
+      renderNews();
+    });
+
+    generateNewsAppIcons();
+
+    const initialCache = loadCache();
+    if (initialCache && Array.isArray(initialCache.items) && initialCache.items.length > 0) {
+      allNews = initialCache.items;
+      renderSourcesStatus(initialCache.sources || []);
+      renderNews();
+    }
+
+    loadFromWorker();
+    setInterval(loadFromWorker, 180000);
+  </script>
+</body>
+</html>
