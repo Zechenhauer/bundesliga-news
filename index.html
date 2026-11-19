@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="NEWS" />
@@ -21,6 +21,7 @@
       background-color: var(--bg-dark);
       color: #f1f5f9;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
     .gold-border {
       border-color: rgba(212, 175, 55, 0.35);
@@ -34,20 +35,47 @@
     }
     .news-card {
       background-color: var(--card-bg);
-      transition: transform 0.15s ease, border-color 0.15s ease;
+      transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
     }
     .news-card:hover {
       transform: translateY(-2px);
       border-color: var(--gold);
     }
+    .news-card:active {
+      transform: scale(0.99);
+      background-color: #131d35;
+    }
+    /* Horizontales Wischen auf dem Smartphone ohne sichtbare Scrollbar */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Kompakte Vorschau auf dem Smartphone (3 Zeilen), auf Tablet/Desktop 4 Zeilen */
+    .card-desc-clamp {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+    }
+    @media (min-width: 640px) {
+      .card-desc-clamp {
+        -webkit-line-clamp: 4;
+      }
+    }
+    .pb-safe {
+      padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
+    }
     @keyframes modalPop {
       from {
         opacity: 0;
-        transform: scale(0.96) translateY(8px);
+        transform: translateY(14px);
       }
       to {
         opacity: 1;
-        transform: scale(1) translateY(0);
+        transform: translateY(0);
       }
     }
     .modal-animate {
@@ -59,30 +87,28 @@
 
   <!-- Header -->
   <header class="border-b gold-border bg-[#050b14]/95 sticky top-0 z-20 backdrop-blur">
-    <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="max-w-5xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3.5 flex items-center justify-between gap-2.5">
       <!-- Links: NEWS App-Logo + Titel -->
-      <div class="flex items-center gap-3">
-        <div class="w-11 h-11 rounded-xl border gold-border bg-gradient-to-br from-[#0f172a] to-[#050b14] flex flex-col items-center justify-center shadow-lg shrink-0 relative overflow-hidden">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border gold-border bg-gradient-to-br from-[#0f172a] to-[#050b14] flex flex-col items-center justify-center shadow-lg shrink-0 relative overflow-hidden">
           <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span class="text-[11px] font-black tracking-wider gold-text leading-none">NEWS</span>
-          <span class="text-[8px] font-bold tracking-widest text-slate-300 mt-0.5">LIVE</span>
+          <span class="text-[10px] sm:text-[11px] font-black tracking-wider gold-text leading-none">NEWS</span>
+          <span class="text-[7px] sm:text-[8px] font-bold tracking-widest text-slate-300 mt-0.5">LIVE</span>
         </div>
 
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-lg sm:text-xl font-extrabold tracking-wide uppercase">
-              Sport, Regio &amp; Verkehr <span class="gold-text">NEWS-Ticker</span>
-            </h1>
-          </div>
-          <p class="text-xs text-slate-400">
-            Fußball (1.–3. Liga &amp; CL) • Darts &amp; Welt-Sport • Niederrhein &amp; Ruhrgebiet • Autobahn
+        <div class="min-w-0">
+          <h1 class="text-sm sm:text-xl font-extrabold tracking-wide uppercase truncate">
+            Sport, Regio &amp; Verkehr <span class="gold-text">Ticker</span>
+          </h1>
+          <p class="text-[11px] sm:text-xs text-slate-400 truncate">
+            Fußball • Darts • Niederrhein &amp; Ruhrgebiet • Autobahn
           </p>
         </div>
       </div>
 
       <!-- Rechts: Webmanagement Logo (logo.png) + Refresh -->
-      <div class="flex items-center justify-between sm:justify-end gap-3">
-        <div class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg bg-slate-900/90 border gold-border">
+      <div class="flex items-center gap-2 shrink-0">
+        <div class="hidden md:flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg bg-slate-900/90 border gold-border">
           <img src="./logo.png" alt="J. Schützendorf Webmanagement Logo"
             class="w-8 h-8 rounded-md object-contain bg-[#070d1a] p-0.5 shrink-0"
             onerror="this.style.display='none'; document.getElementById('header-logo-fallback').classList.remove('hidden');" />
@@ -102,57 +128,57 @@
           </div>
         </div>
 
+        <button type="button" id="today-toggle-btn"
+          class="gold-bg px-2.5 sm:px-3 py-2 rounded-lg text-[11px] sm:text-xs font-bold cursor-pointer border gold-border whitespace-nowrap">
+          📅 Heute: AN
+        </button>
+
         <button onclick="loadFromWorker()" id="refresh-btn"
-          class="px-3 py-2 rounded-lg text-xs font-semibold border gold-border hover:bg-[#d4af37]/15 transition cursor-pointer shrink-0">
-          ↻ Neu
+          class="px-2.5 sm:px-3 py-2 rounded-lg text-xs font-semibold border gold-border hover:bg-[#d4af37]/15 transition cursor-pointer shrink-0">
+          ↻
         </button>
       </div>
     </div>
 
-    <!-- Haupt-Tabs: Fußball | Sport / Darts | Regio & Ruhrgebiet | Verkehr & Baustellen -->
-    <div class="max-w-5xl mx-auto px-4 pb-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/70 mb-2.5">
-      <div class="flex flex-wrap items-center gap-2" id="main-tabs">
+    <!-- Haupt-Tabs: Auf dem Handy horizontal wischbar -->
+    <div class="max-w-5xl mx-auto px-3 sm:px-4 pb-2 border-b border-slate-800/70 mb-2">
+      <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar" id="main-tabs">
         <button type="button" data-tab="football"
-          class="main-tab-btn gold-bg px-3.5 py-1.5 rounded-lg text-xs font-extrabold cursor-pointer">
-          ⚽ Fußball (1.–3. Liga &amp; CL)
+          class="main-tab-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-extrabold cursor-pointer whitespace-nowrap shrink-0">
+          ⚽ Fußball
         </button>
         <button type="button" data-tab="world"
-          class="main-tab-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
-          🎯 Sport / Darts (Welt)
+          class="main-tab-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer whitespace-nowrap shrink-0">
+          🎯 Sport / Darts
         </button>
         <button type="button" data-tab="regio"
-          class="main-tab-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+          class="main-tab-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer whitespace-nowrap shrink-0">
           🏙️ Regio &amp; Ruhrgebiet
         </button>
         <button type="button" data-tab="traffic"
-          class="main-tab-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+          class="main-tab-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer whitespace-nowrap shrink-0">
           🚧 Verkehr &amp; Baustellen
         </button>
       </div>
-
-      <button type="button" id="today-toggle-btn"
-        class="gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer border gold-border">
-        📅 Nur heute: AN
-      </button>
     </div>
 
     <!-- Unterfilter Tab 1: Fußball -->
-    <div id="football-subfilters" class="max-w-5xl mx-auto px-4 pb-2.5 flex flex-col gap-2">
-      <div class="flex flex-col sm:flex-row gap-2.5 justify-between">
-        <div class="flex flex-wrap items-center gap-1.5" id="league-filters">
-          <button data-filter="ALL" class="filter-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+    <div id="football-subfilters" class="max-w-5xl mx-auto px-3 sm:px-4 pb-2.5 flex flex-col gap-2">
+      <div class="flex flex-col sm:flex-row gap-2 justify-between">
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar" id="league-filters">
+          <button data-filter="ALL" class="filter-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer whitespace-nowrap shrink-0">
             Alle Ligen
           </button>
-          <button data-filter="BL1" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          <button data-filter="BL1" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
             1. Bundesliga
           </button>
-          <button data-filter="BL2" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          <button data-filter="BL2" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
             2. Bundesliga
           </button>
-          <button data-filter="BL3" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          <button data-filter="BL3" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
             3. Liga
           </button>
-          <button data-filter="INT" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          <button data-filter="INT" class="filter-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
             Pokal &amp; CL
           </button>
         </div>
@@ -164,39 +190,39 @@
       </div>
 
       <!-- Team-Schnellfilter -->
-      <div class="flex flex-wrap items-center gap-1.5" id="team-filters">
-        <span class="text-[11px] text-slate-400 mr-1 font-medium">Teams:</span>
-        <button data-team="ALL" class="team-btn gold-bg px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer">
-          Alle Teams
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar" id="team-filters">
+        <span class="text-[11px] text-slate-400 mr-0.5 font-medium shrink-0">Teams:</span>
+        <button data-team="ALL" class="team-btn gold-bg px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer whitespace-nowrap shrink-0">
+          Alle
         </button>
-        <button data-team="BAYERN" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
+        <button data-team="BAYERN" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
           Bayern München
         </button>
-        <button data-team="GLADBACH" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
-          Borussia Mönchengladbach
+        <button data-team="GLADBACH" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
+          Mönchengladbach
         </button>
-        <button data-team="MSV" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
+        <button data-team="MSV" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
           MSV Duisburg
         </button>
-        <button data-team="RWE" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">
+        <button data-team="RWE" class="team-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
           Rot-Weiß Essen
         </button>
       </div>
     </div>
 
     <!-- Unterfilter Tab 2: Sport / Darts (Welt) -->
-    <div id="world-subfilters" class="max-w-5xl mx-auto px-4 pb-3 hidden flex-col sm:flex-row gap-2.5 justify-between">
-      <div class="flex flex-wrap items-center gap-1.5" id="world-category-filters">
-        <button data-world="ALL" class="world-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+    <div id="world-subfilters" class="max-w-5xl mx-auto px-3 sm:px-4 pb-2.5 hidden flex-col sm:flex-row gap-2 justify-between">
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar" id="world-category-filters">
+        <button data-world="ALL" class="world-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer whitespace-nowrap shrink-0">
           Alle Welt-News
         </button>
-        <button data-world="DARTS" class="world-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+        <button data-world="DARTS" class="world-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
           🎯 Darts
         </button>
-        <button data-world="WORLD_FB" class="world-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+        <button data-world="WORLD_FB" class="world-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
           🌍 Int. Fußball
         </button>
-        <button data-world="WORLD_SPORT" class="world-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+        <button data-world="WORLD_SPORT" class="world-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
           🏆 Welt-Sport
         </button>
       </div>
@@ -208,28 +234,28 @@
     </div>
 
     <!-- Unterfilter Tab 3: Regio & Ruhrgebiet -->
-    <div id="regio-subfilters" class="max-w-5xl mx-auto px-4 pb-3 hidden flex-col gap-2">
-      <div class="flex flex-col sm:flex-row gap-2.5 justify-between">
-        <div class="flex flex-wrap items-center gap-1.5" id="regio-city-filters">
-          <button data-regio="ALL" class="regio-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+    <div id="regio-subfilters" class="max-w-5xl mx-auto px-3 sm:px-4 pb-2.5 hidden flex-col gap-2">
+      <div class="flex flex-col sm:flex-row gap-2 justify-between">
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar" id="regio-city-filters">
+          <button data-regio="ALL" class="regio-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer whitespace-nowrap shrink-0">
             Alle (Fokus zuerst)
           </button>
-          <button data-regio="FOCUS" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
-            ⭐ Nur Fokus-Städte
+          <button data-regio="FOCUS" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
+            ⭐ Fokus-Städte
           </button>
-          <button data-regio="NIEDERRHEIN_MOERS_DU" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
-            Niederrhein / Moers / DU
+          <button data-regio="NIEDERRHEIN_MOERS_DU" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
+            Moers / DU / Niederrhein
           </button>
-          <button data-regio="ESSEN" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          <button data-regio="ESSEN" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
             Essen
           </button>
-          <button data-regio="OBERHAUSEN" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          <button data-regio="OBERHAUSEN" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
             Oberhausen
           </button>
-          <button data-regio="GELSENKIRCHEN" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          <button data-regio="GELSENKIRCHEN" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
             Gelsenkirchen
           </button>
-          <button data-regio="BOTTROP" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          <button data-regio="BOTTROP" class="regio-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
             Bottrop
           </button>
         </div>
@@ -242,21 +268,21 @@
     </div>
 
     <!-- Unterfilter Tab 4: Verkehr & Baustellen -->
-    <div id="traffic-subfilters" class="max-w-5xl mx-auto px-4 pb-3 hidden flex-col gap-2">
-      <div class="flex flex-col sm:flex-row gap-2.5 justify-between">
-        <div class="flex flex-wrap items-center gap-1.5" id="traffic-type-filters">
-          <button data-traffic-type="ALL" class="traffic-type-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+    <div id="traffic-subfilters" class="max-w-5xl mx-auto px-3 sm:px-4 pb-2.5 hidden flex-col gap-2">
+      <div class="flex flex-col sm:flex-row gap-2 justify-between">
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar" id="traffic-type-filters">
+          <button data-traffic-type="ALL" class="traffic-type-btn gold-bg px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer whitespace-nowrap shrink-0">
             Alle Lagen
           </button>
-          <button data-traffic-type="CLOSURE" class="traffic-type-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          <button data-traffic-type="CLOSURE" class="traffic-type-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
             🚫 Sperrungen
           </button>
-          <button data-traffic-type="ROADWORK" class="traffic-type-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+          <button data-traffic-type="ROADWORK" class="traffic-type-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0">
             🏗️ Baustellen
           </button>
           <a href="https://www.adac.de/verkehr/verkehrsinformationen/de/nordrhein-westfalen/"
              target="_blank" rel="noopener noreferrer"
-             class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#ffdc00]/15 text-[#ffdc00] border border-[#ffdc00]/45 hover:bg-[#ffdc00]/25 transition inline-flex items-center gap-1">
+             class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#ffdc00]/15 text-[#ffdc00] border border-[#ffdc00]/45 hover:bg-[#ffdc00]/25 transition inline-flex items-center gap-1 whitespace-nowrap shrink-0">
             🚗 ADAC Verkehr NRW ↗
           </a>
         </div>
@@ -267,75 +293,78 @@
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-1.5" id="traffic-road-filters">
-        <span class="text-[11px] text-slate-400 mr-1 font-medium">Autobahn:</span>
-        <button data-road="ALL" class="road-btn gold-bg px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer">Alle</button>
-        <button data-road="A40" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A40</button>
-        <button data-road="A42" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A42</button>
-        <button data-road="A57" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A57</button>
-        <button data-road="A3" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A3</button>
-        <button data-road="A59" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A59</button>
-        <button data-road="A52" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A52</button>
-        <button data-road="A2" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">A2</button>
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar" id="traffic-road-filters">
+        <span class="text-[11px] text-slate-400 mr-0.5 font-medium shrink-0">Autobahn:</span>
+        <button data-road="ALL" class="road-btn gold-bg px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer shrink-0">Alle</button>
+        <button data-road="A40" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer shrink-0">A40</button>
+        <button data-road="A42" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer shrink-0">A42</button>
+        <button data-road="A57" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer shrink-0">A57</button>
+        <button data-road="A3" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer shrink-0">A3</button>
+        <button data-road="A59" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer shrink-0">A59</button>
+        <button data-road="A52" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer shrink-0">A52</button>
+        <button data-road="A2" class="road-btn bg-slate-800/80 text-slate-200 hover:bg-slate-700 px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer shrink-0">A2</button>
       </div>
     </div>
   </header>
 
   <!-- Hauptbereich -->
-  <main class="max-w-5xl w-full mx-auto px-4 py-5 flex-1">
+  <main class="max-w-5xl w-full mx-auto px-3 sm:px-4 py-3.5 sm:py-5 flex-1">
     <!-- Trefferanzahl + Quellen-Status-Badges -->
-    <div class="mb-4 flex flex-col gap-2.5">
-      <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
-        <span id="news-count">0 Meldungen geladen</span>
+    <div class="mb-3 sm:mb-4 flex flex-col gap-2">
+      <div class="flex items-center justify-between gap-2 text-[11px] sm:text-xs text-slate-400">
+        <span id="news-count" class="font-medium text-slate-300">0 Meldungen geladen</span>
         <span id="last-updated" class="text-[11px] text-slate-400">Warte auf Worker...</span>
       </div>
-      <div id="sources-bar" class="flex flex-wrap gap-1.5">
+      <div id="sources-bar" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
         <!-- Quellen-Status-Badges werden aus data.sources gerendert -->
       </div>
     </div>
 
-    <!-- News Liste -->
-    <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- News Liste (Smartphone: kompakte 1-Spalten-Karten, Tablet/Desktop: 2 Spalten) -->
+    <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
       <!-- Kacheln werden per JS eingefügt -->
     </div>
   </main>
 
   <!-- Footer mit Webmanagement Logo (logo.png) -->
-  <footer class="border-t border-slate-800/80 py-4 px-4">
-    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
-      <div class="flex items-center gap-2">
+  <footer class="border-t border-slate-800/80 py-4 px-3 sm:px-4">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400 text-center sm:text-left">
+      <div class="flex items-center justify-center gap-2">
         <img src="./logo.png" alt="J. Schützendorf Webmanagement Logo"
           class="w-6 h-6 rounded object-contain bg-[#070d1a] p-0.5 shrink-0"
           onerror="this.style.display='none';" />
         <span class="font-semibold text-slate-300">Webmanagement Jürgen Schützendorf</span>
-        <span class="text-slate-600">|</span>
-        <span class="gold-text font-mono text-[11px]">J. SCHÜTZENDORF WEB &amp; CODE</span>
       </div>
-      <span class="text-[11px] text-slate-500">Fußball • Darts • Niederrhein &amp; Ruhrgebiet • Verkehr</span>
+      <span class="gold-text font-mono text-[11px]">J. SCHÜTZENDORF WEB &amp; CODE</span>
     </div>
   </footer>
 
-  <!-- Schönes Artikel-Pop-up (Modal) -->
-  <div id="article-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+  <!-- Smartphone-optimiertes Bottom-Sheet / Desktop-Modal -->
+  <div id="article-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm"
     onclick="handleModalBackdropClick(event)">
-    <div class="modal-animate w-full max-w-2xl rounded-2xl border gold-border bg-[#0f172a] shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
-      <div class="px-5 py-4 border-b border-slate-800 bg-[#070d1a]/90 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-2 flex-wrap">
+    <div class="modal-animate w-full max-w-2xl rounded-t-2xl sm:rounded-2xl border-t sm:border gold-border bg-[#0f172a] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Smartphone-Ziehgriff -->
+      <div class="sm:hidden pt-2 pb-1 flex justify-center bg-[#070d1a]/90">
+        <span class="w-10 h-1 rounded-full bg-slate-700"></span>
+      </div>
+
+      <div class="px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-800 bg-[#070d1a]/90 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0">
           <span id="modal-league-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded border"></span>
           <span id="modal-source-badge" class="text-[11px] font-semibold px-2.5 py-0.5 rounded bg-slate-800 text-slate-300"></span>
-          <span id="modal-time" class="text-xs gold-text font-medium"></span>
+          <span id="modal-time" class="text-[11px] sm:text-xs gold-text font-medium"></span>
         </div>
 
         <button type="button" onclick="closeArticleModal()" aria-label="Fenster schließen"
-          class="w-8 h-8 rounded-lg border border-slate-700 hover:border-[#d4af37] hover:text-[#d4af37] text-slate-300 flex items-center justify-center transition cursor-pointer shrink-0">
+          class="w-9 h-9 rounded-lg border border-slate-700 hover:border-[#d4af37] hover:text-[#d4af37] text-slate-300 flex items-center justify-center transition cursor-pointer shrink-0">
           ✕
         </button>
       </div>
 
-      <div class="p-5 sm:p-6 overflow-y-auto space-y-4">
-        <h2 id="modal-title" class="text-lg sm:text-xl font-extrabold text-white leading-snug"></h2>
+      <div class="p-4 sm:p-6 overflow-y-auto space-y-3.5 sm:space-y-4">
+        <h2 id="modal-title" class="text-base sm:text-xl font-extrabold text-white leading-snug"></h2>
 
-        <div id="modal-description" class="text-sm text-slate-200/95 leading-relaxed whitespace-pre-line bg-[#070d1a]/60 border border-slate-800 rounded-xl p-4"></div>
+        <div id="modal-description" class="text-[13px] sm:text-sm text-slate-200/95 leading-relaxed whitespace-pre-line bg-[#070d1a]/60 border border-slate-800 rounded-xl p-3.5 sm:p-4"></div>
 
         <div class="text-[11px] text-slate-400 break-all bg-slate-900/70 border border-slate-800/80 rounded-lg px-3 py-2">
           <span class="text-slate-500 font-semibold">Quelle / Karte: </span>
@@ -343,34 +372,34 @@
         </div>
       </div>
 
-      <div class="px-5 py-3.5 border-t border-slate-800 bg-[#070d1a]/90 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
-        <div class="flex items-center gap-2">
+      <div class="px-4 sm:px-5 pt-3 pb-safe border-t border-slate-800 bg-[#070d1a]/90 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <a id="modal-external-link" href="#" target="_blank" rel="noopener noreferrer"
+          class="gold-bg px-4 py-2.5 sm:py-2 rounded-xl sm:rounded-lg text-xs font-bold text-center hover:brightness-110 transition sm:order-2">
+          Vollständigen Artikel öffnen →
+        </a>
+
+        <div class="grid grid-cols-2 sm:flex items-center gap-2 sm:order-1">
           <button type="button" onclick="closeArticleModal()"
-            class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition cursor-pointer">
+            class="px-3.5 py-2.5 sm:py-2 rounded-xl sm:rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition cursor-pointer">
             Schließen
           </button>
           <button type="button" id="modal-copy-btn" onclick="copyArticleLink()"
-            class="px-3.5 py-2 rounded-lg text-xs font-semibold border border-slate-700 hover:border-[#d4af37] text-slate-200 transition cursor-pointer">
+            class="px-3.5 py-2.5 sm:py-2 rounded-xl sm:rounded-lg text-xs font-semibold border border-slate-700 hover:border-[#d4af37] text-slate-200 transition cursor-pointer">
             🔗 Link kopieren
           </button>
         </div>
-
-        <a id="modal-external-link" href="#" target="_blank" rel="noopener noreferrer"
-          class="gold-bg px-4 py-2 rounded-lg text-xs font-bold text-center hover:brightness-110 transition">
-          Vollständigen Artikel öffnen →
-        </a>
       </div>
     </div>
   </div>
 
   <script>
     const WORKER_URL = 'https://bundesliga-news.jelenbreaker.workers.dev/';
-    const STORAGE_KEY = 'bl_worker_news_cache_v14';
+    const STORAGE_KEY = 'bl_worker_news_cache_v15';
     const MAX_DESC_CHARS = 0;
 
     // Alte Cache-Versionen restlos entfernen
     try {
-      for (let i = 1; i <= 13; i++) {
+      for (let i = 1; i <= 14; i++) {
         localStorage.removeItem(`bl_worker_news_cache_v${i}`);
       }
     } catch (_) {}
@@ -489,17 +518,17 @@
     }
 
     function formatTime(timestamp) {
-      if (!timestamp) return 'Datum unbekannt';
+      if (!timestamp) return 'Unbekannt';
       const now = Date.now();
       const diffMin = Math.floor((now - timestamp) / 60000);
       const dateObj = new Date(timestamp);
       const timeStr = dateObj.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-      const dateStr = dateObj.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const dateStr = dateObj.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
 
-      if (diffMin < 1) return `Gerade eben (${timeStr})`;
-      if (diffMin < 60) return `Vor ${diffMin} Min. (${timeStr})`;
-      if (diffMin < 1440) return `Heute, ${timeStr} Uhr`;
-      return `${dateStr} • ${timeStr} Uhr`;
+      if (diffMin < 1) return `Gerade eben`;
+      if (diffMin < 60) return `vor ${diffMin} Min.`;
+      if (diffMin < 1440) return `Heute, ${timeStr}`;
+      return `${dateStr} • ${timeStr}`;
     }
 
     function renderSourcesStatus(sources = []) {
@@ -520,7 +549,7 @@
           : `${src.source}: ${src.error || 'Fehler'}`;
 
         return `
-          <span class="text-[11px] font-medium px-2.5 py-1 rounded-md border ${badgeStyle}">
+          <span class="text-[11px] font-medium px-2.5 py-1 rounded-md border whitespace-nowrap shrink-0 ${badgeStyle}">
             ${src.ok ? '●' : '✕'} ${infoText}
           </span>
         `;
@@ -567,7 +596,7 @@
         renderSourcesStatus(lastSourcesData);
         renderNews();
 
-        const nowStr = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const nowStr = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
         document.getElementById('last-updated').textContent = `Stand: ${nowStr}`;
       } catch (err) {
         const cached = loadCache();
@@ -585,7 +614,7 @@
           document.getElementById('last-updated').textContent = `Fehler: ${err.message}`;
         }
       } finally {
-        btn.textContent = '↻ Neu';
+        btn.textContent = '↻';
         btn.disabled = false;
       }
     }
@@ -811,13 +840,13 @@
       const dayLabel = currentMainTab === 'traffic'
         ? ' (aktive Lagen)'
         : (onlyToday ? ' (heute)' : ' (alle Tage)');
-      countEl.textContent = `${visibleNews.length} aktuelle Meldungen${dayLabel}`;
+      countEl.textContent = `${visibleNews.length} Meldungen${dayLabel}`;
 
       if (visibleNews.length === 0) {
         container.innerHTML = `
-          <div class="col-span-full text-center py-12 px-4 text-slate-400 border border-dashed border-slate-700 rounded-xl">
-            <p class="font-semibold text-slate-200 mb-1">Keine Meldungen angezeigt</p>
-            <p class="text-xs text-slate-400">${errorMessage || (currentMainTab === 'traffic' ? 'Für die gewählte Autobahn / Kategorie liegen aktuell keine Meldungen im Bereich Niederrhein & Ruhrgebiet vor.' : (onlyToday ? 'Für den heutigen Tag liegen aktuell keine passenden Meldungen vor. Teste ggf. „Nur heute: AUS“.' : 'Kein Treffer für den gewählten Filter.'))}</p>
+          <div class="col-span-full text-center py-10 px-4 text-slate-400 border border-dashed border-slate-700 rounded-xl">
+            <p class="font-semibold text-slate-200 mb-1 text-sm">Keine Meldungen angezeigt</p>
+            <p class="text-xs text-slate-400">${errorMessage || (currentMainTab === 'traffic' ? 'Für die gewählte Autobahn / Kategorie liegen aktuell keine Meldungen im Bereich Niederrhein & Ruhrgebiet vor.' : (onlyToday ? 'Für heute liegen aktuell keine passenden Meldungen vor. Teste oben „Heute: AUS“.' : 'Kein Treffer für den gewählten Filter.'))}</p>
           </div>`;
         return;
       }
@@ -827,7 +856,7 @@
         const fullDesc = formatDescription(item.description || '');
         const regioMeta = currentMainTab === 'regio' ? (item._regio || getRegioMatchInfo(item)) : null;
         const focusCitiesBadge = regioMeta && regioMeta.badges.length > 0
-          ? `<span class="text-[11px] font-bold px-2 py-0.5 rounded bg-[#d4af37]/20 text-[#d4af37] border border-[#d4af37]/40">⭐ ${regioMeta.badges.join(' • ')}</span>`
+          ? `<span class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded bg-[#d4af37]/20 text-[#d4af37] border border-[#d4af37]/40">⭐ ${regioMeta.badges.join(' • ')}</span>`
           : '';
         const cardHighlight = (regioMeta && regioMeta.isFocus) || item.league === 'CLOSURE'
           ? 'border-[#d4af37]/45'
@@ -836,35 +865,39 @@
         return `
           <article onclick="openArticleModal(${idx})" role="button" tabindex="0"
              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openArticleModal(${idx});}"
-             class="news-card border ${cardHighlight} rounded-xl p-4 flex flex-col justify-between gap-3 cursor-pointer">
+             class="news-card border ${cardHighlight} rounded-xl p-3.5 sm:p-4 flex flex-col justify-between gap-2.5 cursor-pointer shadow-sm">
             <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <div class="flex items-center flex-wrap gap-1.5">
-                  <span class="text-[11px] font-bold px-2 py-0.5 rounded border ${badgeColor}">
+              <!-- Obere Meta-Zeile: Kategorie/Quelle links, Zeitstempel rechts -->
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <div class="flex items-center flex-wrap gap-1.5 min-w-0">
+                  <span class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded border ${badgeColor}">
                     ${item.leagueLabel || item.league}
                   </span>
-                  <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                  <span class="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-800/90 text-slate-300 truncate max-w-[145px] sm:max-w-none">
                     ${item.source}
                   </span>
                   ${focusCitiesBadge}
                 </div>
-                <span class="text-[11px] gold-text font-medium whitespace-nowrap">
+                <span class="text-[11px] gold-text font-semibold whitespace-nowrap shrink-0 pt-0.5">
                   ${formatTime(item.timestamp)}
                 </span>
               </div>
 
-              <h2 class="text-base font-bold text-white leading-snug mb-1.5">
+              <!-- Schlagzeile -->
+              <h2 class="text-[15px] sm:text-base font-bold text-white leading-snug mb-1.5">
                 ${item.title}
               </h2>
 
-              <p class="text-xs text-slate-300/90 leading-relaxed whitespace-pre-line">
+              <!-- Kompakte Vorschau (3 Zeilen auf Smartphone, voller Text im Pop-up) -->
+              <p class="card-desc-clamp text-xs text-slate-300/90 leading-relaxed">
                 ${fullDesc}
               </p>
             </div>
 
+            <!-- Fußzeile der Kachel -->
             <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-              <span>${item.tab === 'traffic' ? 'Details & Karte im Pop-up' : 'Artikel im Pop-up lesen'}</span>
-              <span class="gold-text font-semibold">${item.tab === 'traffic' ? 'Details ↗' : 'Artikel lesen ↗'}</span>
+              <span>${item.tab === 'traffic' ? 'Details & Karte' : 'Volltext öffnen'}</span>
+              <span class="gold-text font-semibold">${item.tab === 'traffic' ? 'Öffnen ↗' : 'Lesen ↗'}</span>
             </div>
           </article>
         `;
@@ -991,11 +1024,11 @@
     todayBtn.addEventListener('click', () => {
       onlyToday = !onlyToday;
       if (onlyToday) {
-        todayBtn.textContent = '📅 Nur heute: AN';
+        todayBtn.textContent = '📅 Heute: AN';
         todayBtn.classList.add('gold-bg', 'font-bold');
         todayBtn.classList.remove('bg-slate-800/80', 'text-slate-200', 'font-semibold');
       } else {
-        todayBtn.textContent = '📅 Nur heute: AUS';
+        todayBtn.textContent = '📅 Heute: AUS';
         todayBtn.classList.remove('gold-bg', 'font-bold');
         todayBtn.classList.add('bg-slate-800/80', 'text-slate-200', 'font-semibold');
       }
