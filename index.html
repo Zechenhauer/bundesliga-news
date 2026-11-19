@@ -40,6 +40,19 @@
       transform: translateY(-2px);
       border-color: var(--gold);
     }
+    @keyframes modalPop {
+      from {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    .modal-animate {
+      animation: modalPop 0.18s ease-out forwards;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -180,9 +193,60 @@
     </div>
   </footer>
 
+  <!-- Schönes Artikel-Pop-up (Modal) -->
+  <div id="article-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+    onclick="handleModalBackdropClick(event)">
+    <div class="modal-animate w-full max-w-2xl rounded-2xl border gold-border bg-[#0f172a] shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
+      <!-- Modal Header -->
+      <div class="px-5 py-4 border-b border-slate-800 bg-[#070d1a]/90 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span id="modal-league-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded border"></span>
+          <span id="modal-source-badge" class="text-[11px] font-semibold px-2.5 py-0.5 rounded bg-slate-800 text-slate-300"></span>
+          <span id="modal-time" class="text-xs gold-text font-medium"></span>
+        </div>
+
+        <button type="button" onclick="closeArticleModal()" aria-label="Fenster schließen"
+          class="w-8 h-8 rounded-lg border border-slate-700 hover:border-[#d4af37] hover:text-[#d4af37] text-slate-300 flex items-center justify-center transition cursor-pointer shrink-0">
+          ✕
+        </button>
+      </div>
+
+      <!-- Modal Inhalt (scrollbar bei längeren Texten) -->
+      <div class="p-5 sm:p-6 overflow-y-auto space-y-4">
+        <h2 id="modal-title" class="text-lg sm:text-xl font-extrabold text-white leading-snug"></h2>
+
+        <div id="modal-description" class="text-sm text-slate-200/95 leading-relaxed whitespace-pre-line bg-[#070d1a]/60 border border-slate-800 rounded-xl p-4"></div>
+
+        <div class="text-[11px] text-slate-400 break-all bg-slate-900/70 border border-slate-800/80 rounded-lg px-3 py-2">
+          <span class="text-slate-500 font-semibold">Quelle-URL: </span>
+          <span id="modal-url-preview"></span>
+        </div>
+      </div>
+
+      <!-- Modal Footer mit Aktionen -->
+      <div class="px-5 py-3.5 border-t border-slate-800 bg-[#070d1a]/90 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeArticleModal()"
+            class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition cursor-pointer">
+            Schließen
+          </button>
+          <button type="button" id="modal-copy-btn" onclick="copyArticleLink()"
+            class="px-3.5 py-2 rounded-lg text-xs font-semibold border border-slate-700 hover:border-[#d4af37] text-slate-200 transition cursor-pointer">
+            🔗 Link kopieren
+          </button>
+        </div>
+
+        <a id="modal-external-link" href="#" target="_blank" rel="noopener noreferrer"
+          class="gold-bg px-4 py-2 rounded-lg text-xs font-bold text-center hover:brightness-110 transition">
+          Vollständigen Artikel öffnen →
+        </a>
+      </div>
+    </div>
+  </div>
+
   <script>
     const WORKER_URL = 'https://bundesliga-news.jelenbreaker.workers.dev/';
-    const STORAGE_KEY = 'bl_worker_news_cache_v4';
+    const STORAGE_KEY = 'bl_worker_news_cache_v5';
 
     // Textlänge auf "lang" (0 = ungekürzter Beschreibungstext aus den Feeds)
     const MAX_DESC_CHARS = 0;
@@ -237,11 +301,13 @@
       } catch (_) {}
     }
 
+    let visibleNews = [];
     let allNews = [];
     let currentLeagueFilter = 'ALL';
     let currentTeamFilter = 'ALL';
     let onlyToday = true;
     let searchQuery = '';
+    let activeModalLink = '';
 
     function isSameDay(timestamp, referenceMs = Date.now()) {
       if (!timestamp) return false;
@@ -369,11 +435,75 @@
       return keywords.some(kw => haystack.includes(kw));
     }
 
+    function openArticleModal(index) {
+      const item = visibleNews[index];
+      if (!item) return;
+
+      activeModalLink = item.link || '';
+      const modal = document.getElementById('article-modal');
+      const leagueBadge = document.getElementById('modal-league-badge');
+      const sourceBadge = document.getElementById('modal-source-badge');
+      const timeEl = document.getElementById('modal-time');
+      const titleEl = document.getElementById('modal-title');
+      const descEl = document.getElementById('modal-description');
+      const urlPreviewEl = document.getElementById('modal-url-preview');
+      const extLinkEl = document.getElementById('modal-external-link');
+      const copyBtn = document.getElementById('modal-copy-btn');
+
+      leagueBadge.className = `text-[11px] font-bold px-2.5 py-0.5 rounded border ${getLeagueBadgeStyle(item.league)}`;
+      leagueBadge.textContent = item.leagueLabel || item.league;
+      sourceBadge.textContent = item.source || 'Quelle';
+      timeEl.textContent = formatTime(item.timestamp);
+      titleEl.textContent = item.title || 'Ohne Titel';
+      descEl.textContent = formatDescription(item.description || '') || 'Keine ausführliche Zusammenfassung im Feed vorhanden. Klicke unten auf „Vollständigen Artikel öffnen“, um den Beitrag direkt bei der Quelle zu lesen.';
+      urlPreviewEl.textContent = activeModalLink;
+      extLinkEl.href = activeModalLink || '#';
+      extLinkEl.textContent = `Vollständigen Artikel (${item.source || 'Quelle'}) öffnen →`;
+      copyBtn.textContent = '🔗 Link kopieren';
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeArticleModal() {
+      const modal = document.getElementById('article-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    function handleModalBackdropClick(event) {
+      if (event.target.id === 'article-modal') {
+        closeArticleModal();
+      }
+    }
+
+    async function copyArticleLink() {
+      if (!activeModalLink) return;
+      const copyBtn = document.getElementById('modal-copy-btn');
+      try {
+        await navigator.clipboard.writeText(activeModalLink);
+        copyBtn.textContent = '✓ Kopiert!';
+      } catch (_) {
+        copyBtn.textContent = 'Link bereit';
+      }
+      setTimeout(() => {
+        copyBtn.textContent = '🔗 Link kopieren';
+      }, 1800);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeArticleModal();
+      }
+    });
+
     function renderNews(errorMessage = '') {
       const container = document.getElementById('news-container');
       const countEl = document.getElementById('news-count');
 
-      const filtered = allNews.filter(item => {
+      visibleNews = allNews.filter(item => {
         const matchesDay = !onlyToday || isSameDay(item.timestamp);
         const matchesLeague = currentLeagueFilter === 'ALL' || item.league === currentLeagueFilter;
         const matchesTeam = matchesSelectedTeam(item);
@@ -384,9 +514,9 @@
       });
 
       const dayLabel = onlyToday ? ' (heute)' : ' (alle Tage)';
-      countEl.textContent = `${filtered.length} aktuelle Meldungen${dayLabel}`;
+      countEl.textContent = `${visibleNews.length} aktuelle Meldungen${dayLabel}`;
 
-      if (filtered.length === 0) {
+      if (visibleNews.length === 0) {
         container.innerHTML = `
           <div class="col-span-full text-center py-12 px-4 text-slate-400 border border-dashed border-slate-700 rounded-xl">
             <p class="font-semibold text-slate-200 mb-1">Keine Meldungen angezeigt</p>
@@ -395,13 +525,14 @@
         return;
       }
 
-      container.innerHTML = filtered.map(item => {
+      container.innerHTML = visibleNews.map((item, idx) => {
         const badgeColor = getLeagueBadgeStyle(item.league);
         const fullDesc = formatDescription(item.description || '');
 
         return `
-          <a href="${item.link}" target="_blank" rel="noopener noreferrer"
-             class="news-card border border-slate-800 rounded-xl p-4 flex flex-col justify-between gap-3 block">
+          <article onclick="openArticleModal(${idx})" role="button" tabindex="0"
+             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openArticleModal(${idx});}"
+             class="news-card border border-slate-800 rounded-xl p-4 flex flex-col justify-between gap-3 cursor-pointer">
             <div>
               <div class="flex items-center justify-between gap-2 mb-2">
                 <div class="flex items-center gap-1.5">
@@ -427,10 +558,10 @@
             </div>
 
             <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-              <span>Artikel öffnen</span>
-              <span class="gold-text font-semibold">Weiterlesen →</span>
+              <span>Artikel im Pop-up lesen</span>
+              <span class="gold-text font-semibold">Artikel lesen ↗</span>
             </div>
-          </a>
+          </article>
         `;
       }).join('');
     }
